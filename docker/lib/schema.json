@@ -8,7 +8,7 @@
     "keywords": { "type": "string" },
     "author": { "type": "string" },
     "url": { "type": "string", "pattern": "^https?://" },
-    "root": { "type": "string", "pattern": "^/" },
+    "root": { "type": "string", "pattern": "^/(.*/)?$" },
     "theme_config": {
       "type": "object",
       "properties": {

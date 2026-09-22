@@ -29,8 +29,8 @@ const titleLines = String(hero.title || 'Cheat Sheets').split(/\r?\n/).map((l) =
         <% if (Array.isArray(hero.links) && hero.links.length > 0) { %>
         <!-- CTA Buttons -->
         <div class="flex flex-col lg:flex-row items-center justify-center gap-4 mb-8 max-w-4xl mx-auto">
-            <% hero.links.forEach(function (link) { %>
-            <a href="<%- link.url %>" title="<%= link.label %>"<% if (/^https?:/.test(link.url)) { %> target="_blank" rel="noopener noreferrer"<% } %>
+            <% hero.links.forEach(function (link) { const external = /^https?:/.test(link.url); %>
+            <a href="<%= external ? link.url : url_for(link.url) %>" title="<%= link.label %>"<% if (external) { %> target="_blank" rel="noopener noreferrer"<% } %>
                class="group inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-lg">
                 <% if (link.icon) { %><div class="mr-3"><%- icon(link.icon) %></div><% } %>
                 <span class="font-semibold"><%= link.label %></span>

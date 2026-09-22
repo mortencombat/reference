@@ -36,7 +36,7 @@ hexo.extend.generator.register('json', (locals) => {
 
     temp_data.index = index;
     temp_data.title = data.title;
-    temp_data.path = data.permalink.replace(hexo.config.url, '');
+    temp_data.path = (hexo.config.root || '/') + data.path;
     temp_data.icon = svgIcon(data.slug);
     temp_data.background = data.background;
     temp_data.intro = data.intro;
