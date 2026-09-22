@@ -7,7 +7,7 @@
     "helpers:pinGitHubActionDigests"
   ],
   "forkProcessing": "enabled",
-  "dependencyDashboard": false,
+  "dependencyDashboard": true,
   "timezone": "Europe/Copenhagen",
   "schedule": ["before 6am on monday"],
   "labels": ["dependencies"],
