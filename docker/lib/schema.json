@@ -12,9 +12,9 @@
     "theme_config": {
       "type": "object",
       "properties": {
-        "index_categories": { "type": "array", "items": { "type": "string" } },
+        "categories": { "type": "array", "items": { "type": "string" } },
         "exclude_posts": { "type": "array", "items": { "type": "string" } },
-        "index_recommends": { "type": "array", "items": { "type": "string" } },
+        "featured_posts": { "type": "array", "items": { "type": "string" } },
         "hero": {
           "type": "object",
           "properties": {

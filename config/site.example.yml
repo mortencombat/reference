@@ -29,10 +29,11 @@ url: http://localhost:8080
 theme_config:
   # Categories shown on the home page, in this order. This list also decides
   # which cheat sheets exist on the site: a sheet is built only if at least
-  # one of its categories is listed. Everything else is left out, including
-  # from search and the sitemap. Remove "Game" here and no game sheet is
-  # built. Your own sheets need one of these categories too.
-  index_categories:
+  # one of its categories is listed (or it is a featured post). Everything
+  # else is left out, including from search and the sitemap. Remove "Game"
+  # here and no game sheet is built. Your own sheets need one of these
+  # categories too.
+  categories:
     - AI
     - Programming
     - Testing
@@ -52,8 +53,9 @@ theme_config:
   #  - apex-legends
   #  - apple-music
 
-  # Cheat sheets featured at the top of the home page (slugs).
-  index_recommends:
+  # Cheat sheets featured at the top of the home page (slugs). These are
+  # always built, even if none of their categories is listed above.
+  featured_posts:
     - chatgpt
     - bash
     - python

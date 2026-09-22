@@ -4,8 +4,9 @@
 # config file) under `theme_config:`. See config/site.example.yml.
 
 # The categories and order displayed on the home page. This list also decides
-# which posts exist: a post is built only if one of its categories is listed.
-index_categories:
+# which posts exist: a post is built only if one of its categories is listed
+# (or it is a featured post).
+categories:
   - AI
   - Programming
   - Testing
@@ -22,8 +23,8 @@ index_categories:
 # Posts to leave out even though their category is listed (slugs)
 exclude_posts: []
 
-# Home recommended posts (slugs)
-index_recommends:
+# Posts featured at the top of the home page (slugs); always built
+featured_posts:
   - chatgpt
   - bash
   - python
