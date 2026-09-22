@@ -98,6 +98,9 @@ pagination_dir: page
 include: []
 exclude:
   - ".github"
+  # Widgets are embedded into cheat sheets by the <widget> shortcode; they are
+  # not published as standalone pages.
+  - "widget/**"
 ignore: []
 
 # Extensions

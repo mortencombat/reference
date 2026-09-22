@@ -36,20 +36,22 @@ const FORBIDDEN = [
   'serviceWorker.register',
   'disqus.com'
 ];
-// Some upstream cheat sheets embed small widgets that load a library from a
-// CDN. That is content, not the theme; keep the list short and deliberate.
-const ALLOWED_EXTERNAL = [
-  'https://cdn.tailwindcss.com', // color-picker.md
-  'https://unpkg.com/cronstrue@', // cron.md
-  ...(allowLivecodes ? ['https://cdn.jsdelivr.net/npm/livecodes'] : [])
-];
+const ALLOWED_EXTERNAL = allowLivecodes ? ['https://cdn.jsdelivr.net/npm/livecodes'] : [];
 
 const problems = [];
 for (const file of REQUIRED) {
   if (!existsSync(join(dir, file))) problems.push(`missing ${file}`);
 }
 
-const pages = readdirSync(dir).filter((name) => name.endsWith('.html'));
+const pages = [];
+const walk = (current, prefix) => {
+  for (const entry of readdirSync(current, { withFileTypes: true })) {
+    const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) walk(join(current, entry.name), rel);
+    else if (entry.name.endsWith('.html')) pages.push(rel);
+  }
+};
+walk(dir, '');
 if (pages.length < MIN_PAGES)
   problems.push(`only ${pages.length} pages, expected at least ${MIN_PAGES}`);
 

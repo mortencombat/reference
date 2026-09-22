@@ -21,7 +21,9 @@ const files = [
   [join(pkgDir('tippy.js'), 'dist/tippy-bundle.umd.min.js'), 'tippy.min.js'],
   [join(pkgDir('katex'), 'dist/katex.min.js'), 'katex/katex.min.js'],
   [join(pkgDir('katex'), 'dist/katex.min.css'), 'katex/katex.min.css'],
-  [join(pkgDir('katex'), 'dist/fonts'), 'katex/fonts']
+  [join(pkgDir('katex'), 'dist/fonts'), 'katex/fonts'],
+  // used by the cron widget (source/widget/cron.html), see themes/coo/scripts/rewrite_links.js
+  [join(pkgDir('cronstrue'), 'dist/cronstrue.min.js'), 'cronstrue.min.js']
 ];
 
 for (const [src, dest] of files) {

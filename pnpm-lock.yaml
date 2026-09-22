@@ -14,6 +14,9 @@ importers:
       ajv:
         specifier: ^8.17.1
         version: 8.17.1
+      cronstrue:
+        specifier: ^3.27.0
+        version: 3.27.0
       gulp:
         specifier: ^5.0.1
         version: 5.0.1
@@ -1146,6 +1149,10 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  cronstrue@3.27.0:
+    resolution: {integrity: sha512-AKhV4ilvx73NmicrZCGASdszUIf2ew0A/6jQQTh4pu3lIUzgWOGjT3Gv3CGIcTQ/p8Qy/tZuCmlaOftj8PXaNg==}
+    hasBin: true
 
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
@@ -5527,6 +5534,8 @@ snapshots:
       parse-json: 5.2.0
     optionalDependencies:
       typescript: 5.8.3
+
+  cronstrue@3.27.0: {}
 
   cross-spawn@7.0.6:
     dependencies:

@@ -39,6 +39,7 @@
   "dependencies": {
     "@popperjs/core": "^2.11.8",
     "ajv": "^8.17.1",
+    "cronstrue": "^3.27.0",
     "gulp": "^5.0.1",
     "gulp-cli": "^3.1.0",
     "gulp-ext-replace": "^0.3.0",

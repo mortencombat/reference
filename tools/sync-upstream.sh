@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Replace the upstream-owned content directories with the versions from
-# Fechin/reference. Only cheat sheets and their icons and preview images are
-# synced; the theme, config and tooling belong to this fork.
+# Fechin/reference. Only cheat sheets, their icons and preview images and the
+# embedded widgets are synced; the theme, config and tooling belong to this fork.
 #
 #   tools/sync-upstream.sh [upstream-ref]     default: upstream/main
 #
@@ -11,7 +11,7 @@ set -euo pipefail
 
 UPSTREAM_URL="https://github.com/Fechin/reference.git"
 REF="${1:-upstream/main}"
-PATHS=(source/_posts source/assets/icon source/assets/image)
+PATHS=(source/_posts source/assets/icon source/assets/image source/widget)
 # Upstream files that this fork intentionally does not ship. Keep this in
 # sync with the deletions on main; anything listed here is removed again
 # after every sync.
