@@ -1,0 +1,21 @@
+/* [s] source citations rendered as an external-link icon (see scripts/citations.js) */
+.citation {
+  display: inline-block;
+  margin-left: 0.15em;
+  color: #6366f1;
+  vertical-align: -0.1em;
+}
+
+.citation svg {
+  display: inline;
+  width: 0.85em;
+  height: 0.85em;
+}
+
+.citation:hover {
+  color: #4338ca;
+}
+
+.dark .citation {
+  color: #818cf8;
+}
