@@ -12,7 +12,24 @@
     "theme_config": {
       "type": "object",
       "properties": {
-        "categories": { "type": "array", "items": { "type": "string" } },
+        "categories": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "string" },
+              {
+                "type": "object",
+                "required": ["name"],
+                "additionalProperties": false,
+                "properties": {
+                  "name": { "type": "string" },
+                  "only": { "type": "array", "items": { "type": "string" } },
+                  "except": { "type": "array", "items": { "type": "string" } }
+                }
+              }
+            ]
+          }
+        },
         "exclude_posts": { "type": "array", "items": { "type": "string" } },
         "featured_posts": { "type": "array", "items": { "type": "string" } },
         "hero": {

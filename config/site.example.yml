@@ -29,10 +29,18 @@ url: http://localhost:8080
 theme_config:
   # Categories shown on the home page, in this order. This list also decides
   # which cheat sheets exist on the site: a sheet is built only if at least
-  # one of its categories is listed (or it is a featured post). Everything
+  # one of its categories admits it (or it is a featured post). Everything
   # else is left out, including from search and the sitemap. Remove "Game"
   # here and no game sheet is built. Your own sheets need one of these
   # categories too.
+  #
+  # An entry is either a name (the whole category) or an object that keeps
+  # only some of its sheets, or all but some:
+  #   - name: Game
+  #     only: [apex-legends, minecraft]
+  #   - name: Toolkit
+  #     except: [colorscreen]
+  # A sheet in several categories is built if any of them admits it.
   categories:
     - AI
     - Programming
@@ -47,8 +55,8 @@ theme_config:
     - Game
     - Other
 
-  # Cheat sheets to leave out even though their category is listed (slugs,
-  # the file name without .md).
+  # Cheat sheets to leave out of every category (slugs, the file name
+  # without .md). For trimming a single category, use only/except above.
   exclude_posts: []
   #  - apex-legends
   #  - apple-music
