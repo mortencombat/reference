@@ -36,7 +36,11 @@ const FORBIDDEN = [
   'serviceWorker.register',
   'disqus.com'
 ];
-const ALLOWED_EXTERNAL = allowLivecodes ? ['https://cdn.jsdelivr.net/npm/livecodes'] : [];
+// With features.livecodes on, the run-code block loads the LiveCodes SDK from
+// a CDN and its playground template references a hosted jQuery.
+const ALLOWED_EXTERNAL = allowLivecodes
+  ? ['https://cdn.jsdelivr.net/npm/livecodes', 'https://ajax.googleapis.com/ajax/libs/jquery/']
+  : [];
 
 const problems = [];
 for (const file of REQUIRED) {
