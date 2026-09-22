@@ -18,6 +18,7 @@
 @import "components/social-buttons.css";
 @import "components/common.css";
 @import "components/topbar.css";
+@import "components/citation.css";
 
 
 html {
