@@ -101,8 +101,8 @@ The upstream cheat sheets show how to use tables, columns, code blocks and the o
 [source/\_posts](source/_posts).
 
 > [!TIP]
-> To cite a source without cluttering the text, write the link as `[[s]](https://example.com/source)`. The build
-> renders it as a small external-link icon with a "Source" tooltip instead of the literal `[s]`.
+> To cite a source without cluttering the text, write the link as `[[source]](https://example.com/page)`. The build
+> renders it as a small external-link icon with a "Source" tooltip. The abbreviations `[[src]]` and `[[s]]` work too.
 
 ## How rebuilding works
 
