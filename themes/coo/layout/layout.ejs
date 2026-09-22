@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html class="<%= is_post() ? 'scrollbar' : '' %>" lang="<%= config.language || 'en' %>" translate="no">
 <%- partial('_partial/head') %>
-<body class="bg-slate-100 dark:bg-slate-900">
+<body class="bg-slate-100 dark:bg-slate-900<%= is_home() ? '' : ' pt-[68px]' %>">
 <%- partial('_partial/header') %>
 <%- body %>
 <%- partial('_partial/toc') %>

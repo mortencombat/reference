@@ -440,8 +440,10 @@ function initTopbar() {
   const hero = document.querySelector('header.home');
   let ticking = false;
   const update = () => {
-    const range = hero ? Math.max(120, hero.offsetHeight - bar.offsetHeight) : 160;
-    const progress = Math.min(1, window.scrollY / range);
+    // Fully opaque once the bottom of the hero (or title block) reaches the bottom of the bar
+    const range = hero ? Math.max(120, hero.offsetTop + hero.offsetHeight - bar.offsetHeight) : 160;
+    const linear = Math.min(1, window.scrollY / range);
+    const progress = 1 - (1 - linear) * (1 - linear); // ease-out: builds up early
     bar.style.setProperty('--topbar-progress', progress.toFixed(3));
     ticking = false;
   };

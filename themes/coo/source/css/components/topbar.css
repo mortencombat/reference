@@ -9,6 +9,18 @@ html {
   --topbar-progress: 0;
 }
 
+/* The bar is 68px tall (row padding + controls); hero and page padding rely on that */
+#topbar .max-container {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* common.css raises the hero header above everything; the bar must paint over it
+   (and stay under the search overlay, which is z-50) */
+header.home {
+  z-index: 10;
+}
+
 #topbar::before {
   content: '';
   position: absolute;
