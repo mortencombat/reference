@@ -1,7 +1,7 @@
 <footer class="text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-800 md:mt-14">
     <% if (page.layout !== "note" && !page._isNotePagination) { %>
         <div class="max-container mb-8 md:py-10 mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 xl:gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 xl:gap-8">
                 <!-- Top Cheatsheet -->
                 <div>
                     <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center">
@@ -52,86 +52,38 @@
                     </div>
                 </div>
 
-                <!-- Developer Tools -->
-                <div>
-                    <% const developerToolsUtm = 'utm_source=cheatsheets.zip&utm_medium=affiliate&utm_campaign=developer_tools'; %>
-                    <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4 flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
-                        </svg>
-                        Developer <span class="text-slate-500">&nbsp;Tools</span>
-                    </h3>
-                    <div class="space-y-3">
-                        <a href="https://tableconvert.com?ref=cheatsheets&<%= developerToolsUtm %>&utm_content=tableconvert_card" target="_blank" data-no-nofollow="true" title="TableConvert - Convert tables between formats instantly for developers" class="group flex items-center p-3 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 hover:border-purple-300 dark:hover:border-purple-500 transition-all duration-200 hover:shadow-md">
-                            <div class="w-8 h-8 flex items-center justify-center flex-shrink-0 mr-3">
-                                <img src="/assets/icon/tableconvert.png" alt="TableConvert logo" class="w-6 h-6 rounded">
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <h4 class="font-medium text-sm text-slate-900 dark:text-slate-100 group-hover:text-purple-600 dark:group-hover:text-purple-400">TableConvert</h4>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 truncate">Convert tables between formats</p>
-                            </div>
-                            <div class="opacity-0 group-hover:opacity-100 transition-opacity">
-                                <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                                </svg>
-                            </div>
-                        </a>
-                        
-                        <a href="https://referral.is/?<%= developerToolsUtm %>&utm_content=referral_is_card" target="_blank" data-no-nofollow="true" title="Referral.is - Find the best referral codes and signup bonuses" class="group flex items-center p-3 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 hover:border-purple-300 dark:hover:border-purple-500 transition-all duration-200 hover:shadow-md">
-                            <div class="w-8 h-8 flex items-center justify-center flex-shrink-0 mr-3">
-                                <img src="/assets/icon/dorefer.png" alt="Referral.is logo" class="w-6 h-6 rounded">
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <h4 class="font-medium text-sm text-slate-900 dark:text-slate-100 group-hover:text-purple-600 dark:group-hover:text-purple-400">Referral.is</h4>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 truncate">Best referral codes & bonuses</p>
-                            </div>
-                            <div class="opacity-0 group-hover:opacity-100 transition-opacity">
-                                <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                                </svg>
-                            </div>
-                        </a>
-                        
-                        <a href="https://fionaai.com?ref=cheatsheets&<%= developerToolsUtm %>&utm_content=fiona_ai_card" target="_blank" data-no-nofollow="true" title="Fiona AI - Your intelligent Chrome AI assistant for productivity" class="group flex items-center p-3 bg-white dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600 hover:border-purple-300 dark:hover:border-purple-500 transition-all duration-200 hover:shadow-md">
-                            <div class="w-8 h-8 flex items-center justify-center flex-shrink-0 mr-3">
-                                <img src="/assets/icon/fionaai.png" alt="Fiona AI logo" class="w-6 h-6 rounded">
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <h4 class="font-medium text-sm text-slate-900 dark:text-slate-100 group-hover:text-purple-600 dark:group-hover:text-purple-400">Fiona AI</h4>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 truncate">Chrome AI assistant</p>
-                            </div>
-                            <div class="opacity-0 group-hover:opacity-100 transition-opacity">
-                                <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                                </svg>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-
                 <!-- Logo Area -->
                 <div class="text-left">
                     <div class="mb-4">
                         <%- partial('_partial/index/logo', { icon: true, theme: 'light' }) %>
                     </div>
                     <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                        Share quick reference and cheat sheet for developers.
+                        <%= (theme.footer && theme.footer.tagline) || config.description %>
                     </p>
                     <div class="space-y-2 text-sm">
-                        <div><a href="/about/" title="About - Learn more about cheatsheets.zip" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400">About</a></div>
-                        <div><a href="/notes/" title="Notes - Browse our developer notes and tutorials" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400">Notes</a></div>
-                        <div><a href="/support/" title="Support - Get help and support our project" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400">Support</a></div>
+                        <% ((theme.footer && theme.footer.links) || []).forEach(function (link) { %>
+                        <div><a href="<%- url_for(link.url) %>" title="<%= link.label %>" class="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"><%= link.label %></a></div>
+                        <% }); %>
                     </div>
+                    <% if (theme.features && theme.features.share) { %>
                     <div class="mt-4">
                         <%- partial('share', { extra: 'justify-start' }) %>
                     </div>
+                    <% } %>
                 </div>
             </div>
         </div>
     <% } %>
-    <div class="max-container flex flex-col sm:flex-row items-center ">
-        <p class="py-2 md:py-3 text-slate-500 text-sm text-center w-full">
-            © <%= new Date().getFullYear() %> cheatsheets.zip, All rights reserved.
+    <div class="max-container flex flex-col items-center">
+        <p class="pt-2 md:pt-3 text-slate-500 text-sm text-center w-full">
+            © <%= new Date().getFullYear() %> <%= config.title %>
         </p>
+        <% if (!theme.footer || theme.footer.credit !== false) { const up = upstream(); %>
+        <p class="pb-2 md:pb-3 text-slate-500 text-xs text-center w-full">
+            Built on <a href="<%- up.repo %>" rel="noopener noreferrer" target="_blank" class="underline hover:text-indigo-600 dark:hover:text-indigo-400"><%= up.name %></a>
+            by <%= up.author %>, released under the GPL-3.0 license.
+            <% if (up.donate) { %>Like it? <a href="<%- up.donate %>" rel="noopener noreferrer" target="_blank" class="underline hover:text-indigo-600 dark:hover:text-indigo-400">Support the original author</a>.<% } %>
+        </p>
+        <% } %>
     </div>
 </footer>

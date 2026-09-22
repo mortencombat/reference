@@ -1,6 +1,6 @@
 <section class="w-full grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
     <% theme.index_recommends.forEach(function (filePath) { %>
-        <% let post = site.posts.findOne({slug: filePath}); %>
+        <% let post = site.posts.findOne({slug: filePath}); if (!post) return; %>
         <a href="<%= url_for(post.path) %>" title="<%= post.title %> Cheatsheet">
             <div class="card <%= post.background %>">
                 <%- icon(post.slug) %>

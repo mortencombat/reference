@@ -1,7 +1,13 @@
 {
-  "name": "CheatSheets.zip",
+  "name": "reference",
   "version": "1.0.0",
+  "description": "Self-hosted cheat sheets for developers, built on Fechin/reference",
+  "license": "GPL-3.0",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.34.5",
   "scripts": {
     "dev": "run-p dev:*",
     "dev:hexo": "npx hexo clean && npx hexo server",
@@ -9,7 +15,8 @@
     "build": "run-s build:*",
     "build:clean": "npx hexo clean",
     "build:rm-db.json": "rm db.json || exit 0",
-    "build:css": "npx postcss themes/coo/source/css/style.tailwindcss -o themes/coo/source/css/style.css",
+    "build:css": "NODE_ENV=production npx postcss themes/coo/source/css/style.tailwindcss -o themes/coo/source/css/style.css",
+    "build:vendor": "node tools/vendor.mjs",
     "build:generate": "npx hexo generate",
     "build:gulp": "npx gulp --max-old-space-size=4096",
     "format": "prettier --write .",
@@ -30,6 +37,8 @@
     "version": "7.3.0"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "ajv": "^8.17.1",
     "gulp": "^5.0.1",
     "gulp-cli": "^3.1.0",
     "gulp-ext-replace": "^0.3.0",
@@ -48,13 +57,14 @@
     "hexo-generator-sitemap": "^3.0.1",
     "hexo-log": "^4.1.0",
     "hexo-pagination": "^4.0.0",
-    "hexo-related-popular-posts": "^5.0.1",
     "hexo-renderer-ejs": "^2.0.0",
     "hexo-renderer-markdown-it": "^5.0.0",
     "hexo-renderer-stylus": "^3.0.1",
     "hexo-server": "^3.0.0",
     "hexo-util": "^3.3.0",
     "highlight.js": "^11.11.1",
+    "js-yaml": "^4.1.0",
+    "katex": "^0.16.22",
     "markdown-it-abbr": "^2.0.0",
     "markdown-it-anchor": "^9.2.0",
     "markdown-it-attrs": "^4.3.1",
@@ -67,7 +77,8 @@
     "markdown-it-shortcode-tag": "^1.1.0",
     "markdown-it-sub": "^2.0.0",
     "markdown-it-sup": "^2.0.0",
-    "markdown-it-task-lists": "^2.1.1"
+    "markdown-it-task-lists": "^2.1.1",
+    "tippy.js": "^6.3.7"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",

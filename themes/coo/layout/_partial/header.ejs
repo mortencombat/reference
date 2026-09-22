@@ -55,6 +55,7 @@
                     </i>
                 </button>
 
+                <% if (theme.features && theme.features.share) { %>
                 <!-- Share Dropdown -->
                 <div class="relative ml-2 lg:ml-3" id="share-dropdown">
                     <button type="button" id="share-trigger"
@@ -73,6 +74,7 @@
                     <div id="share-menu-portal"></div>
 
                 </div>
+                <% } %>
             </div>
         </div>
     </div>
@@ -84,6 +86,7 @@
 
 </header>
 
+<% if (theme.features && theme.features.share) { %>
 <!-- Share Dropdown Menu (Portal) - Outside header to avoid overflow issues -->
 <div id="share-menu" class="fixed z-[9999] w-56 rounded-3xl bg-white dark:bg-slate-800 shadow-xl outline outline-1 outline-slate-200 dark:outline-slate-700 opacity-0 invisible transform scale-95 transition-all duration-200 pointer-events-none">
     <div class="py-2">
@@ -138,3 +141,4 @@
         </a>
     </div>
 </div>
+<% } %>

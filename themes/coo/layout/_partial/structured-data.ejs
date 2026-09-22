@@ -10,12 +10,12 @@ const orgData = {
     "@type": "ImageObject",
     "url": config.url + "/assets/logo/icon-192x192.png"
   },
-  "description": config.description,
-  "sameAs": [
-    "https://github.com/Fechin/reference",
-    "https://x.com/Fechin"
-  ]
+  "description": config.description
 };
+const sameAs = [];
+if (theme.social && theme.social.github) sameAs.push(theme.social.github);
+if (theme.social && theme.social.twitter) sameAs.push("https://x.com/" + theme.social.twitter);
+if (sameAs.length > 0) orgData.sameAs = sameAs;
 
 // Basic Website data
 const websiteData = {

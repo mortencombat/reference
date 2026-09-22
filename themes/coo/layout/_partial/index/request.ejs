@@ -1,3 +1,4 @@
+<% if (!theme.features || theme.features.contribute !== false) { const up = upstream(); %>
 <section class="text-slate-800 max-container">
     <div class=" mx-auto flex py-12 items-center justify-center flex-col">
         <span class="inline-block h-1 w-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 mt-8 mb-6"></span>
@@ -5,14 +6,22 @@
             <h3 class="sm:text-4xl text-3xl mb-4 font-medium text-slate-800 dark:text-slate-300">See something
                 missing?</h3>
             <p class="mb-8 leading-relaxed dark:text-slate-300">
-                Feel free to contribute to the code on my GitHub repository or follow me to stay updated on the latest
-                cheat sheets in real-time,  it's a best chance to do it!
-
+                The cheat sheets on this site are maintained by the open source community in the
+                <a href="<%- up.repo %>" target="_blank" rel="noopener noreferrer" class="underline"><%= up.name %></a> project.
+                Improve a sheet or add a new one there and every instance benefits.
             </p>
-            <div class="flex flex-col md:flex-row justify-center space-x-4">
-                <%- partial('_partial/buttons/github-contribute', {variant: 'request', showLabel: true}) %>
-                <%- partial('_partial/buttons/follow-x', {variant: 'request', showLabel: true}) %>
+            <div class="flex flex-col md:flex-row justify-center gap-4">
+                <a href="<%- contributing() %>" target="_blank" rel="noopener noreferrer" title="Contribute on GitHub"
+                   class="inline-flex items-center justify-center px-6 py-3 bg-slate-800 dark:bg-slate-700 rounded-xl text-white hover:bg-slate-700 dark:hover:bg-slate-600 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                    <div class="mr-3"><%- icon("github") %></div>
+                    <span class="font-semibold">Contribute on GitHub</span>
+                </a>
+                <a href="<%- request_cheatsheet() %>" target="_blank" rel="noopener noreferrer" title="Request a cheat sheet"
+                   class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl text-white hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                    <span class="font-semibold">Request a cheat sheet</span>
+                </a>
             </div>
         </div>
     </div>
 </section>
+<% } %>

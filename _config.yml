@@ -3,17 +3,17 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: CheatSheets.zip
-subtitle: "Ultimate Cheat for Developers"
-description: "Share quick reference and cheat sheet for developers"
+title: Reference
+subtitle: "Cheat Sheets for Developers"
+description: "Quick reference and cheat sheets for developers"
 keywords: cheat,sheet,cheatsheets,reference,programming,code table,snippets,linux,command,shortcuts,developers
-author: Fechin
+author: Reference
 language: en
 timezone: "UTC"
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: https://cheatsheets.zip
+url: http://localhost:8080
 root: /
 permalink: :name.html
 permalink_defaults:
@@ -72,12 +72,8 @@ seo:
   # Default image for social sharing
   default_image: "/assets/image/preview.png"
   # Author information
-  author_name: "Fechin"
-  author_url: "https://cheatsheets.zip"
-  # Social media configuration
-  social:
-    twitter: "Fechin"
-    github: "Fechin/reference"
+  author_name: "Reference"
+  author_url: ""
   # Site type
   site_type: "Educational Technology Platform"
   # Target audience
@@ -113,26 +109,13 @@ nofollow:
   enable: true
   field: site
   exclude:
-    - "tableconvert.com"
-    - "sbti.now"
-    - "fionaai.com"
     - "github.com"
-    - "gospinwheel.com"
-    - "colorscreen.co"
-    - "sshkeygenerator.com"
-    - "x.com"
 
 excerpt:
   depth: 2
   excerpt_excludes: []
   more_excludes: []
   hideWholePostExcerpts: true
-
-# Deployment
-## Docs: https://hexo.io/docs/deployment.html
-deploy:
-  - type: cjh_bing_url_submitter
-  - type: cjh_baidu_url_submitter
 
 # hexo-server configuration
 server:

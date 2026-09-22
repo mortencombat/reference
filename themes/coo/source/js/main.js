@@ -439,69 +439,9 @@ function showCopyNotification(message) {
 }
 
 // GitHub Stars Functionality
-async function fetchGitHubStars() {
-  // Find all GitHub stars elements (support multiple variants)
-  const starsElements = document.querySelectorAll('[id^="github-stars"]');
-  if (starsElements.length === 0) return;
-
-  try {
-    // Try to get from cache first
-    const cached = localStorage.getItem('github-stars');
-    const cacheTime = localStorage.getItem('github-stars-time');
-    const now = Date.now();
-
-    // Use cache if it's less than 5 minutes old
-    if (cached && cacheTime && now - parseInt(cacheTime) < 5 * 60 * 1000) {
-      starsElements.forEach((element) => {
-        element.innerHTML = formatStarCount(parseInt(cached));
-      });
-      return;
-    }
-
-    // Fetch from GitHub API
-    const response = await fetch('https://api.github.com/repos/Fechin/reference');
-    if (!response.ok) throw new Error('Failed to fetch');
-
-    const data = await response.json();
-    const stars = data.stargazers_count;
-
-    // Cache the result
-    localStorage.setItem('github-stars', stars.toString());
-    localStorage.setItem('github-stars-time', now.toString());
-
-    // Update UI with animation
-    starsElements.forEach((element) => {
-      element.innerHTML = formatStarCount(stars);
-      element.classList.add('animate-pulse');
-      setTimeout(() => {
-        element.classList.remove('animate-pulse');
-      }, 1000);
-    });
-  } catch (error) {
-    console.warn('Failed to fetch GitHub stars:', error);
-    // Fallback to cached value or default
-    const cached = localStorage.getItem('github-stars');
-    const fallbackValue = cached ? formatStarCount(parseInt(cached)) : '6.5k';
-
-    starsElements.forEach((element) => {
-      element.innerHTML = fallbackValue;
-    });
-  }
-}
-
-function formatStarCount(count) {
-  if (count >= 1000) {
-    return (count / 1000).toFixed(1) + 'k';
-  }
-  return count.toString();
-}
-
 window.addEventListener('load', () => {
   // Initialize share dropdown
   initShareDropdown();
-
-  // Fetch GitHub stars
-  fetchGitHubStars();
 
   // Dark mode functionality
   document.querySelector('#darkMode').addEventListener('click', () => {
