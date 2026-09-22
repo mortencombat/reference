@@ -52,6 +52,9 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: BUILD_ID=${{ github.sha }}
+          # The weekly rebuild exists to pick up base image and apk updates
+          # (nginx), which a cached layer would hide.
+          no-cache: ${{ github.event_name == 'schedule' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - uses: actions/attest-build-provenance@v2
