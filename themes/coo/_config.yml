@@ -3,9 +3,6 @@
 # Every key here can be overridden from the site config (or a mounted
 # config file) under `theme_config:`. See config/site.example.yml.
 
-# Limit on the number of recent articles
-recent_posts_limits: 4
-
 # The categories and order displayed on the home page
 index_categories:
   - AI
@@ -29,27 +26,6 @@ index_recommends:
   - vim
   - regex
   - awk
-
-# Posts shown as "Top" in the footer and sidebar (slugs, in order)
-top_posts:
-  - python
-  - vim
-  - javascript
-  - bash
-  - regex
-  - sed
-  - golang
-  - html
-  - java
-  - postgres
-  - vhdl
-
-# Related posts on cheat sheet pages, chosen by tag and category overlap
-related_posts:
-  title: Related
-  max_count: 4
-
-top_posts_title: Top
 
 # Home page hero
 hero:
@@ -92,10 +68,3 @@ upstream:
   author: Fechin
   repo: https://github.com/Fechin/reference
   donate: https://github.com/sponsors/Fechin
-
-# Your own links, if any. Leave empty to omit the related metadata.
-social:
-  # X (Twitter) handle without the @
-  twitter: ""
-  # GitHub profile or repository URL
-  github: ""

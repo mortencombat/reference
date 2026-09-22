@@ -57,27 +57,6 @@ theme_config:
     - regex
     - awk
 
-  # Cheat sheets listed as "Top" in the footer and sidebar (slugs).
-  top_posts:
-    - python
-    - vim
-    - javascript
-    - bash
-    - regex
-    - sed
-    - golang
-    - html
-    - java
-    - postgres
-    - vhdl
-
-  # Number of "Recent" cheat sheets shown on cheat sheet pages.
-  recent_posts_limits: 4
-
-  related_posts:
-    title: Related
-    max_count: 4
-
   # --- Home page hero -------------------------------------------------------
   hero:
     # Headline. Each line is rendered on its own line, in the same typography.
@@ -122,10 +101,3 @@ theme_config:
   footer:
     # Credit line naming the upstream project and its author. Please keep it.
     credit: true
-
-  # Optional links to your own profiles, used in page metadata.
-  social:
-    # X (Twitter) handle without the @
-    twitter: ""
-    # GitHub profile or repository URL
-    github: ""

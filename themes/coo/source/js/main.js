@@ -334,12 +334,6 @@ function initShareDropdown() {
 }
 
 // Share Functions
-function shareOnX() {
-  const url = encodeURIComponent(window.location.href);
-  const text = encodeURIComponent(document.title);
-  window.open(`https://x.com/intent/tweet?text=${text}&url=${url}`, '_blank');
-}
-
 function shareOnFacebook() {
   const url = encodeURIComponent(window.location.href);
   window.open(`https://facebook.com/sharer/sharer.php?u=${url}`, '_blank');
