@@ -7,8 +7,6 @@
     "description": { "type": "string" },
     "keywords": { "type": "string" },
     "author": { "type": "string" },
-    "language": { "type": "string" },
-    "timezone": { "type": "string" },
     "url": { "type": "string", "pattern": "^https?://" },
     "root": { "type": "string", "pattern": "^/" },
     "exclude_posts": { "type": "array", "items": { "type": "string" } },

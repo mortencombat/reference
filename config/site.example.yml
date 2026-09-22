@@ -16,8 +16,6 @@ subtitle: Cheat Sheets for Developers
 description: Quick reference and cheat sheets for developers
 # Shown in the HTML author meta tag.
 author: Reference
-language: en
-timezone: UTC
 
 # Public URL of this instance, used for the sitemap, canonical links and
 # social previews. Set it to the address your users type in.
