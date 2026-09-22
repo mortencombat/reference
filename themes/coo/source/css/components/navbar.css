@@ -16,8 +16,8 @@ header .max-container {
   transform-origin: top right;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Use absolute positioning, follow button position */
-  position: absolute;
+  /* Positioned from the trigger's viewport rectangle; the top bar is fixed, so the menu must be too */
+  position: fixed;
   z-index: 99999; /* Increase z-index to ensure it's on top layer */
   pointer-events: auto; /* Ensure it can be clicked */
 }

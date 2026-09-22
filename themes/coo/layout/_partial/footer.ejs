@@ -1,10 +1,10 @@
-<footer class="text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-800 md:mt-14 py-4">
-    <div class="max-container flex flex-col items-center">
-        <p class="pt-2 md:pt-3 text-slate-500 text-sm text-center w-full">
+<footer class="text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-800 md:mt-14 py-6">
+    <div class="max-container flex flex-col items-center space-y-1">
+        <p class="text-slate-500 text-sm text-center w-full">
             © <%= new Date().getFullYear() %> <%= config.title %>
         </p>
         <% if (!theme.footer || theme.footer.credit !== false) { const up = upstream(); %>
-        <p class="pb-2 md:pb-3 text-slate-500 text-xs text-center w-full">
+        <p class="text-slate-500 text-xs text-center w-full">
             Built on <a href="<%- up.repo %>" rel="noopener noreferrer" target="_blank" class="underline hover:text-indigo-600 dark:hover:text-indigo-400"><%= up.name %></a>
             by <%= up.author %>, released under the GPL-3.0 license.
             <% if (up.donate) { %>Like it? <a href="<%- up.donate %>" rel="noopener noreferrer" target="_blank" class="underline hover:text-indigo-600 dark:hover:text-indigo-400">Support the original author</a>.<% } %>
