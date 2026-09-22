@@ -84,7 +84,8 @@ theme_config:
 
   # --- Optional features ----------------------------------------------------
   features:
-    # Share menu (opens X, Facebook, Reddit, ... in a new tab on click).
+    # Share menu in the header: Facebook, Reddit, Pinterest, LinkedIn, Line,
+    # email and copy link. Nothing loads until an entry is clicked.
     share: false
     # "Run code" buttons on sheets that support them. Loads the LiveCodes
     # playground from a public CDN, so it does not work offline.

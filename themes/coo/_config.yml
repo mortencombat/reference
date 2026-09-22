@@ -47,7 +47,7 @@ hero:
 
 # Optional features. All off by default except the contribute section.
 features:
-  # Share menu in the header and footer (opens social networks on click)
+  # Share menu in the header (Facebook, Reddit, Pinterest, LinkedIn, Line, email, copy link)
   share: false
   # "Run code" buttons on sheets that support it; loads LiveCodes from a CDN
   livecodes: false
