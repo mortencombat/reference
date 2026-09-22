@@ -37,10 +37,19 @@ git fetch --quiet upstream main
 sha="$(git rev-parse "$REF")"
 git rm -rq --ignore-unmatch --cached "${PATHS[@]}"
 rm -rf "${PATHS[@]}"
-git checkout --quiet "$sha" -- "${PATHS[@]}"
+for p in "${PATHS[@]}"; do
+  # A directory upstream no longer has is simply dropped here too.
+  if git cat-file -e "$sha:$p" 2>/dev/null; then
+    git checkout --quiet "$sha" -- "$p"
+  else
+    echo "note: $p does not exist upstream at $sha" >&2
+  fi
+done
 git rm -qf --ignore-unmatch "${EXCLUDE[@]}"
-echo "$sha" > UPSTREAM_COMMIT
+# Record the last upstream commit that touched the synced paths, so that
+# upstream commits elsewhere do not produce empty syncs.
+git log -1 --format=%H "$sha" -- "${PATHS[@]}" > UPSTREAM_COMMIT
 git add -A "${PATHS[@]}" UPSTREAM_COMMIT
 
-echo "upstream commit: $sha"
+echo "upstream commit: $(cat UPSTREAM_COMMIT)"
 git diff --cached --name-status

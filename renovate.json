@@ -1,6 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended", ":semanticCommits", "group:allNonMajor"],
+  "forkProcessing": "enabled",
+  "dependencyDashboard": false,
   "timezone": "Europe/Copenhagen",
   "schedule": ["before 6am on monday"],
   "labels": ["dependencies"],
@@ -15,26 +17,12 @@
       "automerge": true
     },
     {
-      "description": "Node is pinned in .nvmrc, package.json engines and the Dockerfile; bump them together",
-      "matchPackageNames": ["node"],
-      "groupName": "node"
-    },
-    {
       "description": "pnpm is pinned in package.json and the Dockerfile; bump them together",
       "matchPackageNames": ["pnpm"],
       "groupName": "pnpm"
     }
   ],
   "customManagers": [
-    {
-      "customType": "regex",
-      "description": "Node major used by the Docker image (FROM node:${NODE_VERSION}-alpine)",
-      "managerFilePatterns": ["/^Dockerfile$/"],
-      "matchStrings": ["ARG NODE_VERSION=(?<currentValue>\\d+)\\n"],
-      "depNameTemplate": "node",
-      "datasourceTemplate": "node-version",
-      "versioningTemplate": "node"
-    },
     {
       "customType": "regex",
       "description": "pnpm version installed in the Docker image",

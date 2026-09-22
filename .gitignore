@@ -86,7 +86,6 @@ db.json
 ######################
 .eslintcache
 .stylelintcache
-.prettierignore
 
 # Vendored browser libraries (copied from node_modules by tools/vendor.mjs)
 themes/coo/source/vendor/

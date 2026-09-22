@@ -4,10 +4,9 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - "**.md"
+      - README.md
       - LICENSE
-      - .github/ISSUE_TEMPLATE/**
-      - .github/dependabot.yml
+      - renovate.json
   schedule:
     # Weekly rebuild so the base image picks up security updates.
     - cron: "17 4 * * 1"
@@ -21,11 +20,19 @@ permissions:
 
 env:
   IMAGE: ghcr.io/${{ github.repository }}
+  # Put the OCI labels on the multi-arch index as well as on each image.
+  DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+
+# One publish at a time, in order, so an older build cannot overwrite latest.
+concurrency:
+  group: publish
+  cancel-in-progress: false
 
 jobs:
   publish:
     name: Build and push
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-qemu-action@v3
@@ -51,6 +58,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
           build-args: BUILD_ID=${{ github.sha }}
           # The weekly rebuild exists to pick up base image and apk updates
           # (nginx), which a cached layer would hide.
