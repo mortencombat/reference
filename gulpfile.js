@@ -4,22 +4,25 @@ const htmlclean = require('gulp-htmlclean');
 const version = require('gulp-version-number');
 const terser = require('gulp-terser');
 
+// The Docker runtime builds into a staging directory; see docker/lib/site.mjs.
+const publicDir = process.env.REFERENCE_PUBLIC_DIR || './public';
+
 // Compress js files
 gulp.task('js', function () {
   return gulp
-    .src(['./public/js/main.js'])
+    .src([`${publicDir}/js/main.js`])
     .pipe(
       terser({
         compress: true
       })
     )
-    .pipe(gulp.dest('./public/js'));
+    .pipe(gulp.dest(`${publicDir}/js`));
 });
 
 // Build html files
 gulp.task('html', function () {
   return gulp
-    .src('./public/**/*.html')
+    .src(`${publicDir}/**/*.html`)
     .pipe(htmlclean())
     .pipe(
       htmlmin({
@@ -38,7 +41,7 @@ gulp.task('html', function () {
         }
       })
     )
-    .pipe(gulp.dest('./public'));
+    .pipe(gulp.dest(publicDir));
 });
 
 gulp.task('default', gulp.parallel('js', 'html'));

@@ -1,0 +1,125 @@
+# Site configuration for a self-hosted Reference instance.
+#
+# Mount this file at /config/site.yml in the container. Everything here is
+# merged over the built-in Hexo configuration, so any Hexo setting can be
+# overridden, but the keys below are the ones meant for operators. Remove
+# keys you do not want to change; the defaults are shown.
+#
+# The container watches this file. Saving a change triggers a rebuild of the
+# site in the background; the running site is replaced once the build
+# succeeds.
+
+# --- Site identity ----------------------------------------------------------
+
+title: Reference
+subtitle: Cheat Sheets for Developers
+description: Quick reference and cheat sheets for developers
+# Shown in the HTML author meta tag.
+author: Reference
+language: en
+timezone: UTC
+
+# Public URL of this instance, used for the sitemap, canonical links and
+# social previews. Set it to the address your users type in.
+url: http://localhost:8080
+# Set both if the site is served under a sub-path, e.g. https://example.com/ref/
+# url: https://example.com/ref
+# root: /ref/
+
+# --- Content ----------------------------------------------------------------
+
+# Hide upstream cheat sheets by slug (the file name without .md).
+exclude_posts: []
+#  - apex-legends
+#  - apple-music
+
+theme_config:
+  # Categories shown on the home page, in this order. A category with no
+  # posts is skipped.
+  index_categories:
+    - AI
+    - Programming
+    - Toolkit
+    - Operating System
+    - Linux Command
+    - Python
+    - Database
+    - Keyboard Shortcuts
+    - Game
+    - Other
+
+  # Cheat sheets featured at the top of the home page (slugs).
+  index_recommends:
+    - chatgpt
+    - bash
+    - python
+    - javascript
+    - go
+    - vim
+    - regex
+    - awk
+
+  # Cheat sheets listed as "Top" in the footer and sidebar (slugs).
+  top_posts:
+    - python
+    - vim
+    - javascript
+    - bash
+    - regex
+    - sed
+    - golang
+    - html
+    - java
+    - postgres
+    - vhdl
+
+  # Number of "Recent" cheat sheets shown on cheat sheet pages.
+  recent_posts_limits: 4
+
+  related_posts:
+    title: Related
+    max_count: 4
+
+  # --- Home page hero -------------------------------------------------------
+  hero:
+    title: Cheat Sheets
+    tagline: for Developers
+    subtitle: Quick references and cheat sheets, crafted by the open community, to boost your productivity.
+    # Optional buttons under the subtitle. `icon` is the name of an SVG in
+    # source/assets/icon (for example "github"); omit it for a text button.
+    links: []
+    #  - label: Our wiki
+    #    url: https://wiki.example.com
+    #  - label: Source
+    #    url: https://github.com/example/reference
+    #    icon: github
+
+  # --- Optional features ----------------------------------------------------
+  features:
+    # Share menu (opens X, Facebook, Reddit, ... in a new tab on click).
+    share: false
+    # "Run code" buttons on sheets that support them. Loads the LiveCodes
+    # playground from a public CDN, so it does not work offline.
+    livecodes: false
+    # "See something missing?" section on the home page pointing to the
+    # upstream project.
+    contribute: true
+
+  # --- Footer ---------------------------------------------------------------
+  footer:
+    # Short text under the logo. Empty means the site description.
+    tagline: ""
+    links:
+      - label: About
+        url: /about/
+      - label: Notes
+        url: /notes/
+    # Credit line naming the upstream project and its author. Please keep it.
+    credit: true
+
+  # Optional links to your own profiles, used in page metadata.
+  social:
+    # X (Twitter) handle without the @
+    twitter: ""
+    # GitHub profile or repository URL
+    github: ""

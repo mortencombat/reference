@@ -1,24 +1,52 @@
-# Stage 1: build the application
-FROM node:19 AS build-app
+# syntax=docker/dockerfile:1
+#
+# Self-hosted Reference: cheat sheets for developers, served by nginx.
+#
+# The final image carries the site generator so that a mounted config
+# (/config/site.yml) and user posts (/data/posts) can be built into a new
+# release inside the container. See docker/lib/site.mjs.
+
+ARG NODE_VERSION=26
+ARG PNPM_VERSION=10.34.5
+
+# --- Build the default site --------------------------------------------------
+FROM node:${NODE_VERSION}-alpine AS build
+ARG PNPM_VERSION
+RUN npm install -g "pnpm@${PNPM_VERSION}"
 WORKDIR /app
+
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile --ignore-scripts
+
 COPY . .
-RUN npm install -g pnpm
-RUN pnpm install
-RUN pnpm run build
+ARG BUILD_ID=dev
+ENV NODE_ENV=production
+RUN echo "${BUILD_ID}" > BUILD_ID \
+    && node tools/vendor.mjs \
+    && node docker/bin/rebuild.mjs \
+    && node tools/check-site.mjs /srv/www \
+    && rm -rf public db.json _multiconfig.yml
 
-# Stage 2: Build nginx
-FROM nginx:alpine AS build-nginx
-WORKDIR /usr/share/nginx/html/
-COPY --from=build-app /app/public /usr/share/nginx/html/
-RUN rm -rf /etc/nginx/conf.d/*
-COPY nginx.conf /etc/nginx/
-EXPOSE 80
+# --- Runtime -----------------------------------------------------------------
+FROM node:${NODE_VERSION}-alpine
+RUN apk add --no-cache nginx \
+    && mkdir -p /config /data/posts /data/icons /srv \
+    && chown -R node:node /config /data /srv
 
-# Stage 3: final image
-FROM alpine:latest
-RUN apk add --no-cache nginx && mkdir -p /run/nginx
-COPY --from=build-nginx /usr/share/nginx/html/ /usr/share/nginx/html/
-COPY --from=build-nginx /etc/nginx/nginx.conf /etc/nginx/nginx.conf
-EXPOSE 80
-HEALTHCHECK --interval=1s --timeout=3s CMD wget -q -O - http://localhost:80 || exit 1
-CMD ["nginx", "-g", "daemon off;"]
+COPY --from=build --chown=node:node /app /app
+COPY --from=build --chown=node:node /srv /srv
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+
+ENV NODE_ENV=production \
+    REFERENCE_CONFIG=/config/site.yml \
+    REFERENCE_DATA=/data \
+    REFERENCE_WATCH_INTERVAL=10 \
+    REFERENCE_KEEP_RELEASES=3
+
+USER node
+WORKDIR /app
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \
+    CMD wget -qO- http://127.0.0.1:8080/healthz >/dev/null || exit 1
+
+ENTRYPOINT ["/app/docker/entrypoint.sh"]

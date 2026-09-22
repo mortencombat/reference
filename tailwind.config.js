@@ -1,3 +1,6 @@
+// The Docker runtime builds from a staged copy of `source`; see docker/lib/site.mjs.
+const sourceDir = process.env.REFERENCE_SOURCE_DIR || 'source';
+
 module.exports = {
   darkMode: 'class', // or 'media' or 'class'
   plugins: [
@@ -22,9 +25,9 @@ module.exports = {
   },
   content: {
     files: [
-      'source/**/*.md',
+      `${sourceDir}/**/*.md`,
       'themes/coo/layout/**/*.ejs',
-      'source/widget/*.html',
+      `${sourceDir}/widget/*.html`,
       'themes/coo/source/js/main.js'
     ]
   }
