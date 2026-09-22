@@ -433,9 +433,36 @@ function showCopyNotification(message) {
 }
 
 // GitHub Stars Functionality
+// Fade the top bar's backdrop in as the hero (home) or the title block (other pages) scrolls away
+function initTopbar() {
+  const bar = document.getElementById('topbar');
+  if (!bar) return;
+  const hero = document.querySelector('header.home');
+  let ticking = false;
+  const update = () => {
+    const range = hero ? Math.max(120, hero.offsetHeight - bar.offsetHeight) : 160;
+    const progress = Math.min(1, window.scrollY / range);
+    bar.style.setProperty('--topbar-progress', progress.toFixed(3));
+    ticking = false;
+  };
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(update);
+      }
+    },
+    { passive: true }
+  );
+  window.addEventListener('resize', update, { passive: true });
+  update();
+}
+
 window.addEventListener('load', () => {
   // Initialize share dropdown
   initShareDropdown();
+  initTopbar();
 
   // Dark mode functionality
   document.querySelector('#darkMode').addEventListener('click', () => {

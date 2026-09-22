@@ -1,0 +1,43 @@
+/* Sticky top bar with a backdrop that fades in while the hero scrolls away */
+
+html {
+  /* keep anchored headings clear of the bar */
+  scroll-padding-top: 5rem;
+}
+
+#topbar {
+  --topbar-progress: 0;
+}
+
+#topbar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: var(--topbar-progress);
+  transition: opacity 0.15s linear;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* Home page: tinted like the hero so the white controls stay legible */
+#topbar.topbar-hero::before {
+  background: rgba(67, 56, 202, 0.82);
+  box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.45);
+}
+
+.dark #topbar.topbar-hero::before {
+  background: rgba(49, 46, 129, 0.85);
+}
+
+/* Other pages: translucent page colour, fading in over the title block */
+#topbar.topbar-page::before {
+  background: rgba(241, 245, 249, 0.85);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.dark #topbar.topbar-page::before {
+  background: rgba(15, 23, 42, 0.85);
+  border-bottom-color: rgba(51, 65, 85, 0.6);
+}
