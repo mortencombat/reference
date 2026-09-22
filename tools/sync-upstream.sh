@@ -12,11 +12,19 @@ set -euo pipefail
 UPSTREAM_URL="https://github.com/Fechin/reference.git"
 REF="${1:-upstream/main}"
 PATHS=(source/_posts source/assets/icon source/assets/image)
-# Upstream files that this fork intentionally does not ship.
+# Upstream files that this fork intentionally does not ship. Keep this in
+# sync with the deletions on main; anything listed here is removed again
+# after every sync.
 EXCLUDE=(
+  # affiliate logos
   source/assets/icon/tableconvert.png
   source/assets/icon/dorefer.png
   source/assets/icon/fionaai.png
+  # X (Twitter)
+  source/_posts/twitter.md
+  source/assets/icon/twitter.svg
+  source/assets/icon/x.svg
+  source/assets/image/twitter-preview.png
 )
 
 cd "$(git rev-parse --show-toplevel)"

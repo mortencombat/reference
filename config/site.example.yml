@@ -87,7 +87,8 @@ theme_config:
 
   # --- Header ---------------------------------------------------------------
   # Icon links next to the dark mode toggle. `icon` is the name of an SVG in
-  # source/assets/icon (or /data/icons); "github" and "info" are built in.
+  # source/assets/icon, themes/coo/icons or /data/icons; "github" and "info"
+  # are built in.
   header:
     links:
       - label: Source on GitHub

@@ -68,9 +68,14 @@ hexo.extend.generator.register('json', (locals) => {
 });
 
 function svgIcon(name) {
-  // Check file exists
-  const svgPath = path.resolve('./', 'source/assets/icon/', `${name}.svg`);
-  if (fs.existsSync(svgPath)) {
+  // Icons for cheat sheets live in source/assets/icon (synced from upstream);
+  // icons that belong to this fork live in themes/coo/icons.
+  const candidates = [
+    path.join(hexo.source_dir, 'assets/icon', `${name}.svg`),
+    path.join(hexo.theme_dir, 'icons', `${name}.svg`)
+  ];
+  const svgPath = candidates.find((candidate) => fs.existsSync(candidate));
+  if (svgPath) {
     const svgContent = fs.readFileSync(svgPath, 'utf8');
     return `<!--[htmlclean-protect]-->${svgContent}<!--[/htmlclean-protect]-->`;
   } else {
