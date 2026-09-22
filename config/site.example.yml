@@ -37,9 +37,9 @@ theme_config:
   # An entry is either a name (the whole category) or an object that keeps
   # only some of its sheets, or all but some:
   #   - name: Game
-  #     only: [apex-legends, minecraft]
+  #     only: [minecraft-java]
   #   - name: Toolkit
-  #     except: [colorscreen]
+  #     except: [alan-ai]
   # A sheet in several categories is built if any of them admits it.
   categories:
     - AI

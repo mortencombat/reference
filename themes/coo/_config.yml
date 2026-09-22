@@ -6,7 +6,7 @@
 # The categories and order displayed on the home page. This list also decides
 # which posts exist: a post is built only if one of its categories admits it
 # (or it is a featured post). An entry is a name, or an object restricting the
-# category: { name: Game, only: [apex-legends] } or { name: Toolkit, except: [x] }.
+# category: { name: Game, only: [minecraft-java] } or { name: Toolkit, except: [alan-ai] }.
 categories:
   - AI
   - Programming
