@@ -9,7 +9,7 @@
   },
   "packageManager": "pnpm@10.34.5",
   "scripts": {
-    "dev": "run-p dev:*",
+    "dev": "node tools/vendor.mjs && run-p dev:*",
     "dev:hexo": "npx hexo clean && npx hexo server",
     "dev:css": "npx postcss themes/coo/source/css/style.tailwindcss -o themes/coo/source/css/style.css --watch",
     "build": "run-s build:*",
