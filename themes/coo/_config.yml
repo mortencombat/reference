@@ -3,11 +3,14 @@
 # Every key here can be overridden from the site config (or a mounted
 # config file) under `theme_config:`. See config/site.example.yml.
 
-# The categories and order displayed on the home page
+# The categories and order displayed on the home page. This list also decides
+# which posts exist: a post is built only if one of its categories is listed.
 index_categories:
   - AI
   - Programming
+  - Testing
   - Toolkit
+  - Productivity
   - Operating System
   - Linux Command
   - Python
@@ -15,6 +18,9 @@ index_categories:
   - Keyboard Shortcuts
   - Game
   - Other
+
+# Posts to leave out even though their category is listed (slugs)
+exclude_posts: []
 
 # Home recommended posts (slugs)
 index_recommends:

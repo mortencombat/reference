@@ -26,18 +26,18 @@ url: http://localhost:8080
 
 # --- Content ----------------------------------------------------------------
 
-# Hide upstream cheat sheets by slug (the file name without .md).
-exclude_posts: []
-#  - apex-legends
-#  - apple-music
-
 theme_config:
-  # Categories shown on the home page, in this order. A category with no
-  # posts is skipped.
+  # Categories shown on the home page, in this order. This list also decides
+  # which cheat sheets exist on the site: a sheet is built only if at least
+  # one of its categories is listed. Everything else is left out, including
+  # from search and the sitemap. Remove "Game" here and no game sheet is
+  # built. Your own sheets need one of these categories too.
   index_categories:
     - AI
     - Programming
+    - Testing
     - Toolkit
+    - Productivity
     - Operating System
     - Linux Command
     - Python
@@ -45,6 +45,12 @@ theme_config:
     - Keyboard Shortcuts
     - Game
     - Other
+
+  # Cheat sheets to leave out even though their category is listed (slugs,
+  # the file name without .md).
+  exclude_posts: []
+  #  - apex-legends
+  #  - apple-music
 
   # Cheat sheets featured at the top of the home page (slugs).
   index_recommends:

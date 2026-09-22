@@ -171,13 +171,10 @@ function run(cmd, args, options, output) {
   }
 }
 
-function stageSource(hash, config, inputs) {
+function stageSource(hash, inputs) {
   const src = join(paths.state, `src-${hash}`);
   rmSync(src, { recursive: true, force: true });
   cpSync(join(paths.app, 'source'), src, { recursive: true });
-  for (const slug of config?.exclude_posts || []) {
-    rmSync(join(src, '_posts', `${slug}.md`), { force: true });
-  }
   for (const rel of inputs.posts.files) {
     cpSync(join(inputs.posts.dir, rel), join(src, '_posts', basename(rel)));
   }
@@ -211,7 +208,7 @@ export function build(hash) {
     log(
       `building ${hash} (${inputs.posts.files.length} user posts, ${inputs.icons.files.length} user icons)`
     );
-    src = stageSource(hash, config, inputs);
+    src = stageSource(hash, inputs);
     rmSync(staging, { recursive: true, force: true });
     rmSync(join(paths.app, 'db.json'), { force: true });
     writeFileSync(overlay, yaml.dump({ source_dir: src, public_dir: staging }));
