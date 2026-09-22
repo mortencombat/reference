@@ -100,6 +100,10 @@ replaces it, which is the way to patch a sheet locally.
 The upstream cheat sheets show how to use tables, columns, code blocks and the other layout helpers:
 [source/\_posts](source/_posts).
 
+> [!TIP]
+> To cite a source without cluttering the text, write the link as `[[s]](https://example.com/source)`. The build
+> renders it as a small external-link icon with a "Source" tooltip instead of the literal `[s]`.
+
 ## How rebuilding works
 
 The container serves a site that was built into the image, so it responds immediately after start. A watcher then
