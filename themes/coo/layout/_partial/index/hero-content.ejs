@@ -4,7 +4,7 @@ const hero = theme.hero || {};
 const titleLines = String(hero.title || 'Cheat Sheets').split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
 %>
 <!-- Hero Content Section (no background, used within header) -->
-<div class="w-full flex flex-col text-center pt-8 pb-10 relative z-30">
+<div class="w-full flex flex-col text-center pt-6 pb-8 relative z-30">
     <div class="max-container lg:w-4/5 xl:w-3/4 relative z-30">
         <!-- Main Heading -->
         <h1 class="text-4xl md:text-5xl lg:text-6xl text-white leading-tight font-bold tracking-tight">
@@ -21,14 +21,14 @@ const titleLines = String(hero.title || 'Cheat Sheets').split(/\r?\n/).map((l) =
 
         <% if (hero.tagline) { %>
         <!-- Tagline -->
-        <h2 class="lg:w-3/4 xl:w-2/3 text-center mx-auto text-lg md:text-xl lg:text-2xl text-slate-300 leading-relaxed font-light tracking-wide mt-8 mb-12">
+        <h2 class="lg:w-3/4 xl:w-2/3 text-center mx-auto text-lg md:text-xl lg:text-2xl text-slate-300 leading-relaxed font-light tracking-wide mt-6 mb-8">
             <%= hero.tagline %>
         </h2>
         <% } %>
 
         <% if (Array.isArray(hero.links) && hero.links.length > 0) { %>
         <!-- CTA Buttons -->
-        <div class="flex flex-col lg:flex-row items-center justify-center gap-4 mb-16 max-w-4xl mx-auto">
+        <div class="flex flex-col lg:flex-row items-center justify-center gap-4 mb-8 max-w-4xl mx-auto">
             <% hero.links.forEach(function (link) { %>
             <a href="<%- link.url %>" title="<%= link.label %>"<% if (/^https?:/.test(link.url)) { %> target="_blank" rel="noopener noreferrer"<% } %>
                class="group inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-lg">
