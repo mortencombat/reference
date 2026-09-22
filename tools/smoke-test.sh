@@ -55,7 +55,8 @@ has "http://127.0.0.1:${port}/bash" 'Bash'
 echo "-- custom config and post"
 cat > "$work/config/site.yml" <<'YAML'
 title: Smoke Test Sheets
-exclude_posts: [apex-legends]
+theme_config:
+  exclude_posts: [apex-legends]
 YAML
 cat > "$work/data/posts/smoke.md" <<'MD'
 ---
