@@ -35,21 +35,19 @@ header.home {
 
 /* Home page: tinted like the hero so the white controls stay legible */
 #topbar.topbar-hero::before {
-  background: rgba(67, 56, 202, 0.82);
+  background: linear-gradient(135deg, rgba(67, 56, 202, 0.82), rgba(126, 34, 206, 0.82));
   box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.45);
 }
 
 .dark #topbar.topbar-hero::before {
-  background: rgba(49, 46, 129, 0.85);
+  background: linear-gradient(135deg, rgba(49, 46, 129, 0.85), rgba(88, 28, 135, 0.85));
 }
 
-/* Other pages: translucent page colour, fading in over the title block */
+/* Other pages: the footer colour (slate-200 / slate-800), fading in over the title block */
 #topbar.topbar-page::before {
-  background: rgba(241, 245, 249, 0.85);
-  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(226, 232, 240, 0.5);
 }
 
 .dark #topbar.topbar-page::before {
-  background: rgba(15, 23, 42, 0.85);
-  border-bottom-color: rgba(51, 65, 85, 0.6);
+  background: rgba(30, 41, 59, 0.5);
 }
