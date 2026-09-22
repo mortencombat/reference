@@ -17,6 +17,7 @@
 @import "components/navbar.css";
 @import "components/social-buttons.css";
 @import "components/common.css";
+@import "components/topbar.css";
 
 
 html {

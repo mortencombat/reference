@@ -334,12 +334,6 @@ function initShareDropdown() {
 }
 
 // Share Functions
-function shareOnX() {
-  const url = encodeURIComponent(window.location.href);
-  const text = encodeURIComponent(document.title);
-  window.open(`https://x.com/intent/tweet?text=${text}&url=${url}`, '_blank');
-}
-
 function shareOnFacebook() {
   const url = encodeURIComponent(window.location.href);
   window.open(`https://facebook.com/sharer/sharer.php?u=${url}`, '_blank');
@@ -439,69 +433,38 @@ function showCopyNotification(message) {
 }
 
 // GitHub Stars Functionality
-async function fetchGitHubStars() {
-  // Find all GitHub stars elements (support multiple variants)
-  const starsElements = document.querySelectorAll('[id^="github-stars"]');
-  if (starsElements.length === 0) return;
-
-  try {
-    // Try to get from cache first
-    const cached = localStorage.getItem('github-stars');
-    const cacheTime = localStorage.getItem('github-stars-time');
-    const now = Date.now();
-
-    // Use cache if it's less than 5 minutes old
-    if (cached && cacheTime && now - parseInt(cacheTime) < 5 * 60 * 1000) {
-      starsElements.forEach((element) => {
-        element.innerHTML = formatStarCount(parseInt(cached));
-      });
-      return;
-    }
-
-    // Fetch from GitHub API
-    const response = await fetch('https://api.github.com/repos/Fechin/reference');
-    if (!response.ok) throw new Error('Failed to fetch');
-
-    const data = await response.json();
-    const stars = data.stargazers_count;
-
-    // Cache the result
-    localStorage.setItem('github-stars', stars.toString());
-    localStorage.setItem('github-stars-time', now.toString());
-
-    // Update UI with animation
-    starsElements.forEach((element) => {
-      element.innerHTML = formatStarCount(stars);
-      element.classList.add('animate-pulse');
-      setTimeout(() => {
-        element.classList.remove('animate-pulse');
-      }, 1000);
-    });
-  } catch (error) {
-    console.warn('Failed to fetch GitHub stars:', error);
-    // Fallback to cached value or default
-    const cached = localStorage.getItem('github-stars');
-    const fallbackValue = cached ? formatStarCount(parseInt(cached)) : '6.5k';
-
-    starsElements.forEach((element) => {
-      element.innerHTML = fallbackValue;
-    });
-  }
-}
-
-function formatStarCount(count) {
-  if (count >= 1000) {
-    return (count / 1000).toFixed(1) + 'k';
-  }
-  return count.toString();
+// Fade the top bar's backdrop in as the hero (home) or the title block (other pages) scrolls away
+function initTopbar() {
+  const bar = document.getElementById('topbar');
+  if (!bar) return;
+  const hero = document.querySelector('header.home');
+  let ticking = false;
+  const update = () => {
+    // Fully opaque once the bottom of the hero (or title block) reaches the bottom of the bar
+    const range = hero ? Math.max(120, hero.offsetTop + hero.offsetHeight - bar.offsetHeight) : 160;
+    const linear = Math.min(1, window.scrollY / range);
+    const progress = 1 - (1 - linear) * (1 - linear); // ease-out: builds up early
+    bar.style.setProperty('--topbar-progress', progress.toFixed(3));
+    ticking = false;
+  };
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(update);
+      }
+    },
+    { passive: true }
+  );
+  window.addEventListener('resize', update, { passive: true });
+  update();
 }
 
 window.addEventListener('load', () => {
   // Initialize share dropdown
   initShareDropdown();
-
-  // Fetch GitHub stars
-  fetchGitHubStars();
+  initTopbar();
 
   // Dark mode functionality
   document.querySelector('#darkMode').addEventListener('click', () => {

@@ -1,6 +1,67 @@
 <% let postPage = (page['layout'] === 'post' || page._isNotePagination || page['layout'] === 'note') ? true : false; %>
-<header class="<% if (is_home()){ %>home<% } %> relative z-10 <% if (is_home()){ %>w-full overflow-visible<% } %>">
-    <% if (is_home()){ %>
+<!-- Top bar: stays at the window top; its backdrop fades in as the hero (or a page's title block) scrolls away -->
+<nav id="topbar" class="fixed inset-x-0 top-0 z-40 <%- is_home() ? 'topbar-hero' : 'topbar-page' %>" aria-label="Site">
+    <div class="max-container relative">
+        <div class="flex flex-row justify-between md:justify-start items-center py-4">
+            <%- partial('index/logo', {icon: true, theme: is_home() ? 'dark' : 'light'}) %>
+            <div class="md:ml-auto flex flex-wrap items-center text-base justify-center">
+                <!-- Search Button -->
+                <button id="mysearch-trigger" type="button"
+                        class="inline-flex h-9 items-center backdrop-blur-sm rounded-3xl px-3 md:px-4 lg:px-6 py-2 transition-colors duration-200 group <%- is_home() ? "bg-white/10 outline outline-1 outline-white/20 text-white hover:bg-white/20 hover:outline-white/30" : "bg-white outline outline-1 outline-slate-200 dark:bg-slate-800 dark:outline-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700" %>">
+                    <div class="md:text-xl md:mr-2 <%- is_home() ? "text-white" : "text-slate-700 dark:text-slate-300" %>">
+                        <%- icon("search") %>
+                    </div>
+                    <span class="hidden md:inline font-medium <%- is_home() ? "text-white" : "text-slate-700 dark:text-slate-300" %>">Search for cheatsheet</span>
+                    <span class="hidden md:inline dark:text-slate-300 md:ml-2 text-sm leading-5 py-0.5 px-1.5 border border-slate-300 rounded-md"><span class="font-sans">⌘</span> <span class="font-sans">K</span></span>
+                </button>
+
+                <!-- Header links (config: theme.header.links) -->
+                <% ((theme.header && theme.header.links) || []).forEach(function (link) { const external = /^https?:/.test(link.url); %>
+                <a href="<%- external ? link.url : url_for(link.url) %>" title="<%= link.label %>" aria-label="<%= link.label %>"<% if (external) { %> target="_blank" rel="noopener noreferrer"<% } %>
+                   class="inline-flex items-center justify-center flex-shrink-0 h-9 w-9 rounded-3xl ml-2 lg:ml-3 backdrop-blur-sm transition-colors duration-200 text-xl <%- is_home() ? "bg-white/10 outline outline-1 outline-white/20 text-white hover:bg-white/20 hover:outline-white/30" : "bg-white outline outline-1 outline-slate-200 dark:bg-slate-800 dark:outline-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700" %>">
+                    <%- icon(link.icon) %>
+                </a>
+                <% }); %>
+
+                <!-- Dark Mode Toggle -->
+                <button id="darkMode" class="inline-flex items-center justify-center flex-shrink-0 h-9 w-9 rounded-3xl ml-2 lg:ml-3 backdrop-blur-sm transition-colors duration-200 group <%- is_home() ? "bg-white/10 outline outline-1 outline-white/20 text-white hover:bg-white/20 hover:outline-white/30" : "bg-white outline outline-1 outline-slate-200 dark:bg-slate-800 dark:outline-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700" %>">
+                    <!-- Sun icon (shown in dark mode) -->
+                    <i class="icon-light transition-all duration-200 <%- is_home() ? "text-white" : "text-slate-600 dark:text-slate-300" %>">
+                        <%- icon("light") %>
+                    </i>
+                    <!-- Moon icon (shown in light mode) -->
+                    <i class="icon-dark transition-all duration-200 <%- is_home() ? "text-white" : "text-slate-600 dark:text-slate-300" %>">
+                        <%- icon("dark") %>
+                    </i>
+                </button>
+
+                <% if (theme.features && theme.features.share) { %>
+                <!-- Share Dropdown -->
+                <div class="relative ml-2 lg:ml-3" id="share-dropdown">
+                    <button type="button" id="share-trigger"
+                            class="inline-flex h-9 items-center rounded-3xl backdrop-blur-sm ml-0 px-3 py-2 transition-colors duration-200 group <%- is_home() ? "bg-white/10 outline outline-1 outline-white/20 text-white hover:bg-white/20 hover:outline-white/30" : "bg-white outline outline-1 outline-slate-200 dark:bg-slate-800 dark:outline-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700" %>"
+                            aria-expanded="false" aria-haspopup="true">
+                        <div class="mr-2 <%- is_home() ? "text-white" : "text-slate-700 dark:text-slate-300" %>">
+                            <%- icon("share") %>
+                        </div>
+                        <span class="hidden md:inline text-sm font-medium <%- is_home() ? "text-white" : "text-slate-700 dark:text-slate-300" %>">Share</span>
+                        <div class="hidden md:inline ml-2 <%- is_home() ? "text-white" : "text-slate-700 dark:text-slate-300" %>">
+                            <%- icon("chevron-down") %>
+                        </div>
+                    </button>
+
+                    <!-- Dropdown Menu Portal Target -->
+                    <div id="share-menu-portal"></div>
+
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<% if (is_home()){ %>
+<header class="home relative z-10 w-full overflow-visible pt-[68px]">
     <!-- Modern Hero Background with Clean Gradient Design -->
     <!-- Main Background Gradient Layer -->
     <div class="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-600 to-indigo-800 pointer-events-none"></div>
@@ -26,73 +87,16 @@
 
     <!-- Gradient Overlay for Better Text Readability -->
     <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10 pointer-events-none"></div>
-    <% } %>
-
-    <!-- Navbar Section -->
-    <div class="max-container z-20 relative">
-        <div class="flex flex-row justify-between md:justify-start items-center py-4">
-            <%- partial('index/logo', {icon: true, theme: is_home() ? 'dark' : 'light'}) %>
-            <div class="md:ml-auto flex flex-wrap items-center text-base justify-center">
-                <!-- Search Button -->
-                <button id="mysearch-trigger" type="button"
-                        class="inline-flex h-9 items-center backdrop-blur-sm rounded-3xl px-3 md:px-4 lg:px-6 py-2 transition-colors duration-200 group <%- is_home() ? "bg-white/10 outline outline-1 outline-white/20 text-white hover:bg-white/20 hover:outline-white/30" : "bg-white outline outline-1 outline-slate-200 dark:bg-slate-800 dark:outline-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700" %>">
-                    <div class="md:text-xl md:mr-2 <%- is_home() ? "text-white" : "text-slate-700 dark:text-slate-300" %>">
-                        <%- icon("search") %>
-                    </div>
-                    <span class="hidden md:inline font-medium <%- is_home() ? "text-white" : "text-slate-700 dark:text-slate-300" %>">Search for cheatsheet</span>
-                    <span class="hidden md:inline dark:text-slate-300 md:ml-2 text-sm leading-5 py-0.5 px-1.5 border border-slate-300 rounded-md"><span class="font-sans">⌘</span> <span class="font-sans">K</span></span>
-                </button>
-
-                <!-- Dark Mode Toggle -->
-                <button id="darkMode" class="inline-flex items-center justify-center flex-shrink-0 h-9 w-9 rounded-3xl ml-2 lg:ml-3 backdrop-blur-sm transition-colors duration-200 group <%- is_home() ? "bg-white/10 outline outline-1 outline-white/20 text-white hover:bg-white/20 hover:outline-white/30" : "bg-white outline outline-1 outline-slate-200 dark:bg-slate-800 dark:outline-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700" %>">
-                    <!-- Sun icon (shown in dark mode) -->
-                    <i class="icon-light transition-all duration-200 <%- is_home() ? "text-white" : "text-slate-600 dark:text-slate-300" %>">
-                        <%- icon("light") %>
-                    </i>
-                    <!-- Moon icon (shown in light mode) -->
-                    <i class="icon-dark transition-all duration-200 <%- is_home() ? "text-white" : "text-slate-600 dark:text-slate-300" %>">
-                        <%- icon("dark") %>
-                    </i>
-                </button>
-
-                <!-- Share Dropdown -->
-                <div class="relative ml-2 lg:ml-3" id="share-dropdown">
-                    <button type="button" id="share-trigger"
-                            class="inline-flex h-9 items-center rounded-3xl backdrop-blur-sm ml-0 px-3 py-2 transition-colors duration-200 group <%- is_home() ? "bg-white/10 outline outline-1 outline-white/20 text-white hover:bg-white/20 hover:outline-white/30" : "bg-white outline outline-1 outline-slate-200 dark:bg-slate-800 dark:outline-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700" %>"
-                            aria-expanded="false" aria-haspopup="true">
-                        <div class="mr-2 <%- is_home() ? "text-white" : "text-slate-700 dark:text-slate-300" %>">
-                            <%- icon("share") %>
-                        </div>
-                        <span class="hidden md:inline text-sm font-medium <%- is_home() ? "text-white" : "text-slate-700 dark:text-slate-300" %>">Share</span>
-                        <div class="hidden md:inline ml-2 <%- is_home() ? "text-white" : "text-slate-700 dark:text-slate-300" %>">
-                            <%- icon("chevron-down") %>
-                        </div>
-                    </button>
-
-                    <!-- Dropdown Menu Portal Target -->
-                    <div id="share-menu-portal"></div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Hero Section (only on home page) -->
-    <% if (is_home()){ %>
+    <!-- Hero Section -->
     <%- partial('index/hero-content') %>
-    <% } %>
-
 </header>
+<% } %>
 
+
+<% if (theme.features && theme.features.share) { %>
 <!-- Share Dropdown Menu (Portal) - Outside header to avoid overflow issues -->
 <div id="share-menu" class="fixed z-[9999] w-56 rounded-3xl bg-white dark:bg-slate-800 shadow-xl outline outline-1 outline-slate-200 dark:outline-slate-700 opacity-0 invisible transform scale-95 transition-all duration-200 pointer-events-none">
     <div class="py-2">
-        <a href="#" onclick="shareOnX()" title="Share on X (Twitter)" aria-label="Share this page on X (Twitter)" role="button" rel="nofollow" class="share-item flex items-center px-4 py-3 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100/50 dark:hover:bg-slate-700/50 transition-colors rounded-xl mx-2 my-1">
-            <div class="flex-shrink-0 w-5 h-5 mr-3 text-[#000000]">
-                <%- icon("x") %>
-            </div>
-            <span class="font-medium">Share on X</span>
-        </a>
         <a href="#" onclick="shareOnFacebook()" title="Share on Facebook" aria-label="Share this page on Facebook" role="button" rel="nofollow" class="share-item flex items-center px-4 py-3 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100/50 dark:hover:bg-slate-700/50 transition-colors rounded-xl mx-2 my-1">
             <div class="flex-shrink-0 w-5 h-5 mr-3 text-[#1877f2]">
                 <%- icon("facebook") %>
@@ -138,3 +142,4 @@
         </a>
     </div>
 </div>
+<% } %>

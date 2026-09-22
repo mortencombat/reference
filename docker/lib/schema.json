@@ -1,0 +1,97 @@
+{
+  "title": "Reference site configuration",
+  "type": "object",
+  "properties": {
+    "title": { "type": "string", "minLength": 1 },
+    "subtitle": { "type": "string" },
+    "description": { "type": "string" },
+    "keywords": { "type": "string" },
+    "author": { "type": "string" },
+    "url": { "type": "string", "pattern": "^https?://" },
+    "root": { "type": "string", "pattern": "^/(.*/)?$" },
+    "theme_config": {
+      "type": "object",
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "string" },
+              {
+                "type": "object",
+                "required": ["name"],
+                "additionalProperties": false,
+                "properties": {
+                  "name": { "type": "string" },
+                  "only": { "type": "array", "items": { "type": "string" } },
+                  "except": { "type": "array", "items": { "type": "string" } }
+                }
+              }
+            ]
+          }
+        },
+        "exclude_posts": { "type": "array", "items": { "type": "string" } },
+        "featured_posts": { "type": "array", "items": { "type": "string" } },
+        "hero": {
+          "type": "object",
+          "properties": {
+            "title": { "type": "string" },
+            "tagline": { "type": "string" },
+            "links": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["label", "url"],
+                "properties": {
+                  "label": { "type": "string" },
+                  "url": { "type": "string" },
+                  "icon": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "features": {
+          "type": "object",
+          "properties": {
+            "share": { "type": "boolean" },
+            "livecodes": { "type": "boolean" },
+            "contribute": { "type": "boolean" }
+          }
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "links": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["label", "url", "icon"],
+                "properties": {
+                  "label": { "type": "string" },
+                  "url": { "type": "string" },
+                  "icon": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "footer": {
+          "type": "object",
+          "properties": {
+            "credit": { "type": "boolean" }
+          }
+        },
+        "upstream": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "author": { "type": "string" },
+            "repo": { "type": "string" },
+            "donate": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

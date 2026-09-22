@@ -42,3 +42,8 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Upstream-owned content, synced verbatim from Fechin/reference
+source/_posts/
+source/widget/
+source/assets/

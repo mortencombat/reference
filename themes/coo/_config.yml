@@ -1,11 +1,18 @@
-# Limit on the number of recent articles
-recent_posts_limits: 4
+# Theme configuration.
+#
+# Every key here can be overridden from the site config (or a mounted
+# config file) under `theme_config:`. See config/site.example.yml.
 
-# The categories and order displayed on the home page
-index_categories:
+# The categories and order displayed on the home page. This list also decides
+# which posts exist: a post is built only if one of its categories admits it
+# (or it is a featured post). An entry is a name, or an object restricting the
+# category: { name: Game, only: [minecraft-java] } or { name: Toolkit, except: [alan-ai] }.
+categories:
   - AI
   - Programming
+  - Testing
   - Toolkit
+  - Productivity
   - Operating System
   - Linux Command
   - Python
@@ -14,8 +21,11 @@ index_categories:
   - Game
   - Other
 
-# Home recommended posts
-index_recommends:
+# Posts to leave out even though their category is listed (slugs)
+exclude_posts: []
+
+# Posts featured at the top of the home page (slugs); always built
+featured_posts:
   - chatgpt
   - bash
   - python
@@ -25,21 +35,44 @@ index_recommends:
   - regex
   - awk
 
-# Related popular posts
-# Dependencies: https://github.com/tea3/hexo-related-popular-posts
-related_posts:
-  enable: true
-  title: Related
-  params:
-    maxCount: 4
-    #PPMixingRate: 0.0
-    #isDate: false
-    #isImage: false
-    #isExcerpt: false
+# Home page hero
+hero:
+  # Headline; each line is rendered on its own line
+  title: |-
+    Cheat Sheets
+    for Developers
+  # Paragraph under the headline; empty to omit
+  tagline: Quick references and cheat sheets to boost your productivity.
+  # Optional call-to-action buttons: [{ label: ..., url: ..., icon: github }]
+  links: []
 
-top_posts:
-  enable: true
-  title: Top
-  params:
-    maxCount: 4
-    PPMixingRate: 1.0
+# Optional features. All off by default except the contribute section.
+features:
+  # Share menu in the header (Facebook, Reddit, Pinterest, LinkedIn, Line, email, copy link)
+  share: false
+  # "Run code" buttons on sheets that support it; loads LiveCodes from a CDN
+  livecodes: false
+  # "See something missing?" section on the home page linking to upstream
+  contribute: true
+
+# Icon links in the header, next to the dark mode toggle. `icon` is the name
+# of an SVG in source/assets/icon.
+header:
+  links:
+    - label: Source on GitHub
+      url: https://github.com/mortencombat/reference
+      icon: github
+    - label: About
+      url: /about/
+      icon: info
+
+footer:
+  # Credit the upstream project in the footer
+  credit: true
+
+# The project this site is built on. Used for credit and contribute links.
+upstream:
+  name: Reference
+  author: Fechin
+  repo: https://github.com/Fechin/reference
+  donate: https://github.com/sponsors/Fechin

@@ -1,0 +1,67 @@
+name: Sync upstream cheat sheets
+
+on:
+  schedule:
+    - cron: "23 3 * * *"
+  workflow_dispatch:
+
+# All writes use UPSTREAM_SYNC_TOKEN; the workflow token only checks out.
+permissions:
+  contents: read
+
+concurrency:
+  group: upstream-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Open PR with upstream changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history so the last content commit can be determined.
+          fetch-depth: 0
+      - name: Fetch upstream content
+        id: sync
+        run: |
+          tools/sync-upstream.sh
+          if git diff --cached --quiet -- source; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "sha=$(cat UPSTREAM_COMMIT)" >> "$GITHUB_OUTPUT"
+            {
+              echo 'files<<EOF'
+              git diff --cached --name-status | head -200
+              echo 'EOF'
+            } >> "$GITHUB_OUTPUT"
+          fi
+      - name: Create pull request
+        if: steps.sync.outputs.changed == 'true'
+        id: pr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          # A PAT (or GitHub App token) is required so that CI runs on the PR;
+          # pull requests created with GITHUB_TOKEN do not trigger workflows.
+          token: ${{ secrets.UPSTREAM_SYNC_TOKEN }}
+          branch: sync/upstream
+          delete-branch: true
+          commit-message: "chore(content): sync cheat sheets from upstream ${{ steps.sync.outputs.sha }}"
+          title: "chore(content): sync cheat sheets from upstream"
+          labels: upstream-sync
+          body: |
+            Automated sync of `source/_posts`, `source/assets/icon` and `source/assets/image`
+            from [Fechin/reference](https://github.com/Fechin/reference) at
+            Fechin/reference@${{ steps.sync.outputs.sha }}.
+
+            ```
+            ${{ steps.sync.outputs.files }}
+            ```
+      - name: Enable auto-merge
+        if: steps.pr.outputs.pull-request-operation == 'created' || steps.pr.outputs.pull-request-operation == 'updated'
+        env:
+          GH_TOKEN: ${{ secrets.UPSTREAM_SYNC_TOKEN }}
+          PR: ${{ steps.pr.outputs.pull-request-number }}
+        run: gh pr merge --auto --squash "$PR" || echo "auto-merge not enabled (already on, or checks still pending)"

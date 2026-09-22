@@ -56,14 +56,6 @@
     <% } %>
     <% } %>
 
-    <!-- twitter share-->
-    <meta name="twitter:card" content="summary_large_image"/>
-    <meta name="twitter:title" content="<%- page_title() %>"/>
-    <meta name="twitter:site" content="@<%- config.author %>">
-    <meta name="twitter:creator" content="@<%- config.author %>">
-    <meta name="twitter:description" content="<%- page_description() %>"/>
-    <meta name="twitter:image" content="<%- page_image() %>"/>
-    <meta name="twitter:image:alt" content="<%- page_title() %> - <%- config.title %>"/>
 
     <!-- favicon -->
     <link rel="icon" href="/images/favicon.png?v=1"/>
@@ -74,7 +66,7 @@
     <meta name="theme-color" content="#6366f1"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-    <meta name="apple-mobile-web-app-title" content="CheatSheets"/>
+    <meta name="apple-mobile-web-app-title" content="<%- config.title %>"/>
     <link rel="apple-touch-icon" href="/assets/logo/icon-192x192.png"/>
     <link rel="apple-touch-icon" sizes="152x152" href="/assets/logo/icon-152x152.png"/>
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/logo/icon-192x192.png"/>
@@ -83,9 +75,6 @@
 
     <!-- misc -->
     <link rel="canonical" href="<%- clean_url(url) %>"/>
-    <link rel="prefetch" href="<%- url_for(config.url) %>"/>
-    <link rel="prerender" href="<%- url_for(config.url) %>"/>
-    <link rel="alternate" href="/atom.xml" title="<%- config.title %>" type="application/atom+xml"/>
 
     <!-- styles -->
     <%- css('css/style.css') %>

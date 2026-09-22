@@ -36,7 +36,7 @@ hexo.extend.generator.register('json', (locals) => {
 
     temp_data.index = index;
     temp_data.title = data.title;
-    temp_data.path = data.permalink.replace(hexo.config.url, '');
+    temp_data.path = (hexo.config.root || '/') + data.path;
     temp_data.icon = svgIcon(data.slug);
     temp_data.background = data.background;
     temp_data.intro = data.intro;
@@ -67,31 +67,15 @@ hexo.extend.generator.register('json', (locals) => {
   return { path: searchName, data: json };
 });
 
-hexo.extend.generator.register('list', (locals) => {
-  const themeConfig = hexo.theme.config;
-  let content = '';
-
-  themeConfig.index_categories.forEach((category) => {
-    content += `<details>\n<summary>${category}</summary>\n\n`;
-    locals.categories
-      .findOne({ name: category })
-      .posts.sort('-date')
-      .map((post) => {
-        content += `- [${post.title}](https://cheatsheets.zip/${post.path}): ${post.intro.trim()}\n`;
-      });
-    content += '\n</details>\n\n';
-  });
-
-  return {
-    path: 'list.md',
-    data: content
-  };
-});
-
 function svgIcon(name) {
-  // Check file exists
-  const svgPath = path.resolve('./', 'source/assets/icon/', `${name}.svg`);
-  if (fs.existsSync(svgPath)) {
+  // Icons for cheat sheets live in source/assets/icon (synced from upstream);
+  // icons that belong to this fork live in themes/coo/icons.
+  const candidates = [
+    path.join(hexo.source_dir, 'assets/icon', `${name}.svg`),
+    path.join(hexo.theme_dir, 'icons', `${name}.svg`)
+  ];
+  const svgPath = candidates.find((candidate) => fs.existsSync(candidate));
+  if (svgPath) {
     const svgContent = fs.readFileSync(svgPath, 'utf8');
     return `<!--[htmlclean-protect]-->${svgContent}<!--[/htmlclean-protect]-->`;
   } else {

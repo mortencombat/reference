@@ -1,0 +1,121 @@
+# Site configuration for a self-hosted Reference instance.
+#
+# Mount this file at /config/site.yml in the container. Everything here is
+# merged over the built-in Hexo configuration, so any Hexo setting can be
+# overridden, but the keys below are the ones meant for operators. Remove
+# keys you do not want to change; the defaults are shown.
+#
+# The container watches this file. Saving a change triggers a rebuild of the
+# site in the background; the running site is replaced once the build
+# succeeds.
+
+# --- Site identity ----------------------------------------------------------
+
+title: Reference
+subtitle: Cheat Sheets for Developers
+description: Quick reference and cheat sheets for developers
+# Shown in the HTML author meta tag.
+author: Reference
+
+# Public URL of this instance, used for the sitemap, canonical links and
+# social previews. Set it to the address your users type in.
+url: http://localhost:8080
+# Set both if the site is served under a sub-path, e.g. https://example.com/ref/
+# url: https://example.com/ref
+# root: /ref/
+
+# --- Content ----------------------------------------------------------------
+
+theme_config:
+  # Categories shown on the home page, in this order. This list also decides
+  # which cheat sheets exist on the site: a sheet is built only if at least
+  # one of its categories admits it (or it is a featured post). Everything
+  # else is left out, including from search and the sitemap. Remove "Game"
+  # here and no game sheet is built. Your own sheets need one of these
+  # categories too.
+  #
+  # An entry is either a name (the whole category) or an object that keeps
+  # only some of its sheets, or all but some:
+  #   - name: Game
+  #     only: [minecraft-java]
+  #   - name: Toolkit
+  #     except: [alan-ai]
+  # A sheet in several categories is built if any of them admits it.
+  categories:
+    - AI
+    - Programming
+    - Testing
+    - Toolkit
+    - Productivity
+    - Operating System
+    - Linux Command
+    - Python
+    - Database
+    - Keyboard Shortcuts
+    - Game
+    - Other
+
+  # Cheat sheets to leave out of every category (slugs, the file name
+  # without .md). For trimming a single category, use only/except above.
+  exclude_posts: []
+  #  - apex-legends
+  #  - apple-music
+
+  # Cheat sheets featured at the top of the home page (slugs). These are
+  # always built, even if none of their categories is listed above.
+  featured_posts:
+    - chatgpt
+    - bash
+    - python
+    - javascript
+    - go
+    - vim
+    - regex
+    - awk
+
+  # --- Home page hero -------------------------------------------------------
+  hero:
+    # Headline. Each line is rendered on its own line, in the same typography.
+    title: |-
+      Cheat Sheets
+      for Developers
+    # Paragraph under the headline. Empty to omit.
+    tagline: Quick references and cheat sheets to boost your productivity.
+    # Optional buttons under the tagline. `icon` is the name of an SVG in
+    # source/assets/icon (for example "github"); omit it for a text button.
+    links: []
+    #  - label: Our wiki
+    #    url: https://wiki.example.com
+    #  - label: Source
+    #    url: https://github.com/example/reference
+    #    icon: github
+
+  # --- Optional features ----------------------------------------------------
+  features:
+    # Share menu in the header: Facebook, Reddit, Pinterest, LinkedIn, Line,
+    # email and copy link. Nothing loads until an entry is clicked.
+    share: false
+    # "Run code" buttons on sheets that support them. Loads the LiveCodes
+    # playground from a public CDN, so it does not work offline.
+    livecodes: false
+    # "See something missing?" section on the home page pointing to the
+    # upstream project.
+    contribute: true
+
+  # --- Header ---------------------------------------------------------------
+  # Icon links next to the dark mode toggle. `icon` is the name of an SVG in
+  # source/assets/icon, themes/coo/icons or /data/icons; "github" and "info"
+  # are built in.
+  header:
+    links:
+      - label: Source on GitHub
+        url: https://github.com/mortencombat/reference
+        icon: github
+      - label: About
+        url: /about/
+        icon: info
+
+  # --- Footer ---------------------------------------------------------------
+  footer:
+    # Credit line naming the upstream project and its author. Please keep it.
+    credit: true

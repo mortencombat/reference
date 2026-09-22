@@ -1,0 +1,40 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    "group:allNonMajor",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "forkProcessing": "enabled",
+  "dependencyDashboard": true,
+  "timezone": "Europe/Copenhagen",
+  "schedule": ["before 6am on monday"],
+  "labels": ["dependencies"],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on the first day of the month"]
+  },
+  "packageRules": [
+    {
+      "description": "Merge non-major updates on their own once CI is green",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest", "lockFileMaintenance"],
+      "automerge": true
+    },
+    {
+      "description": "pnpm is pinned in package.json and the Dockerfile; bump them together",
+      "matchPackageNames": ["pnpm"],
+      "groupName": "pnpm"
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "pnpm version installed in the Docker image",
+      "managerFilePatterns": ["/^Dockerfile$/"],
+      "matchStrings": ["ARG PNPM_VERSION=(?<currentValue>[\\d.]+)\\n"],
+      "depNameTemplate": "pnpm",
+      "datasourceTemplate": "npm"
+    }
+  ]
+}
