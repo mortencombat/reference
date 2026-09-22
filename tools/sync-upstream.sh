@@ -38,7 +38,7 @@ sha="$(git rev-parse "$REF")"
 git rm -rq --ignore-unmatch --cached "${PATHS[@]}"
 rm -rf "${PATHS[@]}"
 git checkout --quiet "$sha" -- "${PATHS[@]}"
-git rm -q --ignore-unmatch "${EXCLUDE[@]}"
+git rm -qf --ignore-unmatch "${EXCLUDE[@]}"
 echo "$sha" > UPSTREAM_COMMIT
 git add -A "${PATHS[@]}" UPSTREAM_COMMIT
 
