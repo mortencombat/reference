@@ -55,18 +55,26 @@
             "contribute": { "type": "boolean" }
           }
         },
-        "footer": {
+        "header": {
           "type": "object",
           "properties": {
-            "tagline": { "type": "string" },
             "links": {
               "type": "array",
               "items": {
                 "type": "object",
-                "required": ["label", "url"],
-                "properties": { "label": { "type": "string" }, "url": { "type": "string" } }
+                "required": ["label", "url", "icon"],
+                "properties": {
+                  "label": { "type": "string" },
+                  "url": { "type": "string" },
+                  "icon": { "type": "string" }
+                }
               }
-            },
+            }
+          }
+        },
+        "footer": {
+          "type": "object",
+          "properties": {
             "credit": { "type": "boolean" }
           }
         },

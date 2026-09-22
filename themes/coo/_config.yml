@@ -68,14 +68,18 @@ features:
   # "See something missing?" section on the home page linking to upstream
   contribute: true
 
-footer:
-  # Short text under the logo; defaults to the site description
-  tagline: ""
+# Icon links in the header, next to the dark mode toggle. `icon` is the name
+# of an SVG in source/assets/icon.
+header:
   links:
+    - label: Source on GitHub
+      url: https://github.com/mortencombat/reference
+      icon: github
     - label: About
       url: /about/
-    - label: Notes
-      url: /notes/
+      icon: info
+
+footer:
   # Credit the upstream project in the footer
   credit: true
 

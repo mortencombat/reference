@@ -105,15 +105,20 @@ theme_config:
     # upstream project.
     contribute: true
 
-  # --- Footer ---------------------------------------------------------------
-  footer:
-    # Short text under the logo. Empty means the site description.
-    tagline: ""
+  # --- Header ---------------------------------------------------------------
+  # Icon links next to the dark mode toggle. `icon` is the name of an SVG in
+  # source/assets/icon (or /data/icons); "github" and "info" are built in.
+  header:
     links:
+      - label: Source on GitHub
+        url: https://github.com/mortencombat/reference
+        icon: github
       - label: About
         url: /about/
-      - label: Notes
-        url: /notes/
+        icon: info
+
+  # --- Footer ---------------------------------------------------------------
+  footer:
     # Credit line naming the upstream project and its author. Please keep it.
     credit: true
 
