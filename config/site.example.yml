@@ -80,10 +80,13 @@ theme_config:
 
   # --- Home page hero -------------------------------------------------------
   hero:
-    title: Cheat Sheets
-    tagline: for Developers
-    subtitle: Quick references and cheat sheets, crafted by the open community, to boost your productivity.
-    # Optional buttons under the subtitle. `icon` is the name of an SVG in
+    # Headline. Each line is rendered on its own line, in the same typography.
+    title: |-
+      Cheat Sheets
+      for Developers
+    # Paragraph under the headline. Empty to omit.
+    tagline: Quick references and cheat sheets, crafted by the open community, to boost your productivity.
+    # Optional buttons under the tagline. `icon` is the name of an SVG in
     # source/assets/icon (for example "github"); omit it for a text button.
     links: []
     #  - label: Our wiki

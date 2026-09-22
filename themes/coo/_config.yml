@@ -53,9 +53,12 @@ top_posts_title: Top
 
 # Home page hero
 hero:
-  title: Cheat Sheets
-  tagline: for Developers
-  subtitle: Quick references and cheat sheets, crafted by the open community, to boost your productivity.
+  # Headline; each line is rendered on its own line
+  title: |-
+    Cheat Sheets
+    for Developers
+  # Paragraph under the headline; empty to omit
+  tagline: Quick references and cheat sheets, crafted by the open community, to boost your productivity.
   # Optional call-to-action buttons: [{ label: ..., url: ..., icon: github }]
   links: []
 
