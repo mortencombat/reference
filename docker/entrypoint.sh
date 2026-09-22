@@ -11,10 +11,15 @@ NGINX_PID=$!
 shutdown() {
     kill -TERM "$WATCH_PID" 2>/dev/null || true
     nginx -c /etc/nginx/nginx.conf -e stderr -s quit 2>/dev/null || true
-    wait "$NGINX_PID" 2>/dev/null || true
+    wait "$WATCH_PID" "$NGINX_PID" 2>/dev/null || true
     exit 0
 }
 trap shutdown TERM INT
 
-# Exit (and let the orchestrator restart us) if nginx dies.
-wait "$NGINX_PID"
+# Exit (and let the orchestrator restart us) if either process dies.
+while kill -0 "$NGINX_PID" 2>/dev/null && kill -0 "$WATCH_PID" 2>/dev/null; do
+    sleep 2 &
+    wait $!
+done
+echo "[reference] nginx or the watcher exited; shutting down" >&2
+shutdown

@@ -2,17 +2,21 @@
  * Build pipeline for the self-hosted container.
  *
  * Inputs: the mounted site config, user posts and icons, plus the image build
- * id. They are hashed into a release id. Each release is built in a staging
- * directory, verified, moved into the releases directory and then activated
- * by atomically replacing the symlink nginx serves from. Failed builds are
- * recorded so the same inputs are not retried until they change.
+ * id. They are read once into a snapshot, hashed into a release id, and the
+ * release is built from that snapshot in a staging directory, verified, moved
+ * into the releases directory and activated by atomically replacing the
+ * symlink nginx serves from. Failed builds are recorded so the same inputs are
+ * not retried until they change. A lock file keeps the watcher and a manual
+ * rebuild from building at the same time.
  */
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import {
+  closeSync,
   cpSync,
   existsSync,
   mkdirSync,
+  openSync,
   readdirSync,
   readFileSync,
   readlinkSync,
@@ -20,13 +24,29 @@ import {
   rmSync,
   statSync,
   symlinkSync,
-  writeFileSync
+  utimesSync,
+  writeFileSync,
+  writeSync
 } from 'node:fs';
-import { basename, join, resolve } from 'node:path';
+import { basename, join } from 'node:path';
 import Ajv from 'ajv';
 import yaml from 'js-yaml';
 
 const env = (name, fallback) => process.env[name] || fallback;
+
+export const log = (msg) => console.log(`[reference] ${new Date().toISOString()} ${msg}`);
+
+/** Positive integer from the environment; anything else falls back with a warning. */
+export function intEnv(name, fallback) {
+  const raw = process.env[name];
+  if (raw === undefined || raw === '') return fallback;
+  const value = Number.parseInt(raw, 10);
+  if (!Number.isFinite(value) || String(value) !== raw.trim() || value < 1) {
+    log(`ignoring ${name}="${raw}" (expected a positive integer); using ${fallback}`);
+    return fallback;
+  }
+  return value;
+}
 
 export const paths = {
   app: env('REFERENCE_APP', '/app'),
@@ -36,12 +56,12 @@ export const paths = {
   state: env('REFERENCE_STATE', '/srv/state'),
   www: env('REFERENCE_WWW', '/srv/www')
 };
-export const keepReleases = Number.parseInt(env('REFERENCE_KEEP_RELEASES', '3'), 10);
+export const keepReleases = intEnv('REFERENCE_KEEP_RELEASES', 3);
 
-const log = (msg) => console.log(`[reference] ${new Date().toISOString()} ${msg}`);
+export class ConfigError extends Error {}
 
 // ---------------------------------------------------------------------------
-// Inputs and hashing
+// Inputs
 
 function sortKeys(value) {
   if (Array.isArray(value)) return value.map(sortKeys);
@@ -55,20 +75,8 @@ function sortKeys(value) {
   return value;
 }
 
-export function loadConfig() {
-  if (!existsSync(paths.config)) return null;
-  const parsed = yaml.load(readFileSync(paths.config, 'utf8'));
-  if (parsed === undefined || parsed === null) return null;
-  if (typeof parsed !== 'object' || Array.isArray(parsed)) {
-    throw new ConfigError(`${paths.config}: expected a YAML mapping at the top level`);
-  }
-  return parsed;
-}
-
 const schema = JSON.parse(readFileSync(new URL('./schema.json', import.meta.url), 'utf8'));
 const validate = new Ajv({ allErrors: true, allowUnionTypes: true }).compile(schema);
-
-export class ConfigError extends Error {}
 
 export function validateConfig(config) {
   if (config === null) return;
@@ -80,28 +88,22 @@ export function validateConfig(config) {
   }
 }
 
-function listFiles(dir, extensions) {
+function listFiles(dir, extension) {
   if (!existsSync(dir)) return [];
   const out = [];
   const walk = (current, prefix) => {
-    for (const entry of readdirSync(current, { withFileTypes: true }).sort((a, b) =>
+    const entries = readdirSync(current, { withFileTypes: true }).sort((a, b) =>
       a.name.localeCompare(b.name)
-    )) {
-      const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+    );
+    for (const entry of entries) {
       if (entry.name.startsWith('.')) continue;
+      const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
       if (entry.isDirectory()) walk(join(current, entry.name), rel);
-      else if (extensions.some((ext) => entry.name.endsWith(ext))) out.push(rel);
+      else if (entry.name.endsWith(extension)) out.push(rel);
     }
   };
   walk(dir, '');
   return out;
-}
-
-export function userInputs() {
-  return {
-    posts: { dir: join(paths.data, 'posts'), files: listFiles(join(paths.data, 'posts'), ['.md']) },
-    icons: { dir: join(paths.data, 'icons'), files: listFiles(join(paths.data, 'icons'), ['.svg']) }
-  };
 }
 
 export function buildId() {
@@ -109,16 +111,74 @@ export function buildId() {
   return existsSync(file) ? readFileSync(file, 'utf8').trim() : 'dev';
 }
 
-/** Stable id for the current inputs: config content (comments and key order ignored), user files, image build. */
-export function computeHash() {
-  const config = loadConfig();
-  const inputs = userInputs();
+/**
+ * Read every input once. Problems (unreadable files, YAML syntax errors,
+ * duplicate names) are collected rather than thrown so that they still
+ * produce a hash and can be recorded as a failed build.
+ */
+export function readInputs() {
+  const snapshot = {
+    build: buildId(),
+    config: null,
+    configText: null,
+    posts: [],
+    icons: [],
+    problems: []
+  };
+
+  if (existsSync(paths.config)) {
+    try {
+      snapshot.configText = readFileSync(paths.config, 'utf8');
+      const parsed = yaml.load(snapshot.configText);
+      if (parsed !== undefined && parsed !== null) {
+        if (typeof parsed !== 'object' || Array.isArray(parsed)) {
+          snapshot.problems.push(`${paths.config}: expected a YAML mapping at the top level`);
+        } else {
+          snapshot.config = parsed;
+        }
+      }
+    } catch (error) {
+      snapshot.problems.push(`${paths.config}: ${error.message}`);
+    }
+  }
+
+  for (const [group, extension] of [
+    ['posts', '.md'],
+    ['icons', '.svg']
+  ]) {
+    const dir = join(paths.data, group);
+    const seen = new Map();
+    for (const rel of listFiles(dir, extension)) {
+      const name = basename(rel);
+      if (seen.has(name)) {
+        snapshot.problems.push(`${dir}: ${rel} and ${seen.get(name)} would both become ${name}`);
+        continue;
+      }
+      seen.set(name, rel);
+      try {
+        snapshot[group].push({ rel, name, data: readFileSync(join(dir, rel)) });
+      } catch (error) {
+        snapshot.problems.push(`${join(dir, rel)}: ${error.message}`);
+      }
+    }
+  }
+  return snapshot;
+}
+
+/** Stable id for a snapshot: config content (comments and key order ignored), user files, image build. */
+export function hashInputs(snapshot) {
   const hash = createHash('sha256');
-  hash.update(JSON.stringify({ build: buildId(), config: sortKeys(config) }));
-  for (const group of Object.values(inputs)) {
-    for (const rel of group.files) {
-      hash.update(`\0${rel}\0`);
-      hash.update(readFileSync(join(group.dir, rel)));
+  hash.update(
+    JSON.stringify({
+      build: snapshot.build,
+      config: snapshot.config ? sortKeys(snapshot.config) : snapshot.configText,
+      problems: snapshot.problems
+    })
+  );
+  for (const group of ['posts', 'icons']) {
+    for (const file of snapshot[group]) {
+      hash.update(`\0${group}/${file.rel}\0`);
+      hash.update(file.data);
     }
   }
   return hash.digest('hex').slice(0, 16);
@@ -137,7 +197,8 @@ export function currentHash() {
 
 const failedLog = (hash) => join(paths.state, 'failed', `${hash}.log`);
 export const hasFailed = (hash) => existsSync(failedLog(hash));
-export const hasRelease = (hash) => existsSync(join(paths.releases, hash, 'index.html'));
+export const clearFailed = (hash) => rmSync(failedLog(hash), { force: true });
+export const hasRelease = (hash) => existsSync(join(paths.releases, hash, '.complete'));
 
 export function activate(hash) {
   const target = join(paths.releases, hash);
@@ -145,6 +206,8 @@ export function activate(hash) {
   rmSync(tmp, { force: true });
   symlinkSync(target, tmp);
   renameSync(tmp, paths.www);
+  const now = new Date();
+  utimesSync(target, now, now); // newest release is the last one pruned
   log(`serving release ${hash}`);
 }
 
@@ -155,8 +218,65 @@ function prune(current) {
     .map((name) => ({ name, mtime: statSync(join(paths.releases, name)).mtimeMs }))
     .sort((a, b) => b.mtime - a.mtime);
   for (const release of releases.slice(Math.max(keepReleases - 1, 0))) {
-    rmSync(join(paths.releases, release.name), { recursive: true, force: true });
+    const deleting = join(paths.releases, `.deleting-${release.name}`);
+    renameSync(join(paths.releases, release.name), deleting);
+    rmSync(deleting, { recursive: true, force: true });
     log(`pruned release ${release.name}`);
+  }
+}
+
+/** Remove leftovers of interrupted builds and prunes. Run at startup. */
+export function sweep() {
+  mkdirSync(paths.releases, { recursive: true });
+  mkdirSync(join(paths.state, 'failed'), { recursive: true });
+  for (const [dir, prefixes] of [
+    [paths.releases, ['.staging-', '.deleting-']],
+    [paths.state, ['src-', 'overlay-']]
+  ]) {
+    for (const name of readdirSync(dir)) {
+      if (prefixes.some((prefix) => name.startsWith(prefix))) {
+        rmSync(join(dir, name), { recursive: true, force: true });
+        log(`removed leftover ${join(dir, name)}`);
+      }
+    }
+  }
+  releaseLock(true);
+}
+
+// ---------------------------------------------------------------------------
+// Lock
+
+const lockFile = () => join(paths.state, 'build.lock');
+
+function acquireLock() {
+  mkdirSync(paths.state, { recursive: true });
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const fd = openSync(lockFile(), 'wx');
+      writeSync(fd, String(process.pid));
+      closeSync(fd);
+      return true;
+    } catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+      const pid = Number.parseInt(readFileSync(lockFile(), 'utf8'), 10);
+      if (pid === process.pid) return true;
+      try {
+        process.kill(pid, 0);
+        return false; // held by a live process
+      } catch {
+        rmSync(lockFile(), { force: true }); // stale
+      }
+    }
+  }
+  return false;
+}
+
+function releaseLock(force = false) {
+  try {
+    const pid = Number.parseInt(readFileSync(lockFile(), 'utf8'), 10);
+    if (force || pid === process.pid) rmSync(lockFile(), { force: true });
+  } catch {
+    // no lock
   }
 }
 
@@ -164,22 +284,32 @@ function prune(current) {
 // Build
 
 function run(cmd, args, options, output) {
-  const result = spawnSync(cmd, args, { ...options, encoding: 'utf8' });
+  const result = spawnSync(cmd, args, {
+    ...options,
+    encoding: 'utf8',
+    maxBuffer: 64 * 1024 * 1024
+  });
   output.push(`$ ${cmd} ${args.join(' ')}\n${result.stdout || ''}${result.stderr || ''}`);
   if (result.status !== 0) {
-    throw new Error(`${basename(cmd)} exited with status ${result.status}`);
+    throw new Error(
+      `${basename(cmd)} exited with ${result.status === null ? result.signal : `status ${result.status}`}`
+    );
   }
 }
 
-function stageSource(hash, inputs) {
+function stageSource(hash, snapshot) {
   const src = join(paths.state, `src-${hash}`);
   rmSync(src, { recursive: true, force: true });
   cpSync(join(paths.app, 'source'), src, { recursive: true });
-  for (const rel of inputs.posts.files) {
-    cpSync(join(inputs.posts.dir, rel), join(src, '_posts', basename(rel)));
-  }
-  for (const rel of inputs.icons.files) {
-    cpSync(join(inputs.icons.dir, rel), join(src, 'assets', 'icon', basename(rel)));
+  for (const [group, dir] of [
+    ['posts', '_posts'],
+    ['icons', 'assets/icon']
+  ]) {
+    for (const file of snapshot[group]) {
+      const target = join(src, dir, file.name);
+      if (existsSync(target)) log(`${group}/${file.rel} replaces the built-in ${dir}/${file.name}`);
+      writeFileSync(target, file.data);
+    }
   }
   return src;
 }
@@ -188,12 +318,19 @@ function verify(dir) {
   for (const required of ['index.html', 'search.json', 'css/style.css', 'js/main.js']) {
     if (!existsSync(join(dir, required))) throw new Error(`build output is missing ${required}`);
   }
-  const pages = readdirSync(dir).filter((name) => name.endsWith('.html')).length;
-  if (pages < 10) throw new Error(`build output has only ${pages} pages`);
-  return pages;
+  const pages = readdirSync(dir).filter(
+    (name) => name.endsWith('.html') && name !== 'index.html'
+  ).length;
+  if (pages < 1) throw new Error('build output has no cheat sheet pages');
+  return pages + 1;
 }
 
-export function build(hash) {
+/** Build a snapshot into a release and activate it. Returns 'built', 'failed' or 'busy'. */
+export function build(snapshot, hash) {
+  if (!acquireLock()) {
+    log(`another build is running; ${hash} will be picked up afterwards`);
+    return 'busy';
+  }
   const started = Date.now();
   const output = [];
   const staging = join(paths.releases, `.staging-${hash}`);
@@ -202,13 +339,16 @@ export function build(hash) {
   mkdirSync(paths.releases, { recursive: true });
   mkdirSync(join(paths.state, 'failed'), { recursive: true });
   try {
-    const config = loadConfig();
-    validateConfig(config);
-    const inputs = userInputs();
+    if (snapshot.problems.length > 0) {
+      throw new ConfigError(
+        `inputs cannot be used:\n${snapshot.problems.map((p) => `  ${p}`).join('\n')}`
+      );
+    }
+    validateConfig(snapshot.config);
     log(
-      `building ${hash} (${inputs.posts.files.length} user posts, ${inputs.icons.files.length} user icons)`
+      `building ${hash} (${snapshot.posts.length} user posts, ${snapshot.icons.length} user icons)`
     );
-    src = stageSource(hash, inputs);
+    src = stageSource(hash, snapshot);
     rmSync(staging, { recursive: true, force: true });
     rmSync(join(paths.app, 'db.json'), { force: true });
     writeFileSync(overlay, yaml.dump({ source_dir: src, public_dir: staging }));
@@ -223,7 +363,7 @@ export function build(hash) {
         REFERENCE_PUBLIC_DIR: staging
       }
     };
-    const configs = ['_config.yml', ...(config ? [paths.config] : []), overlay].join(',');
+    const configs = ['_config.yml', ...(snapshot.config ? [paths.config] : []), overlay].join(',');
     run(
       bin('postcss'),
       ['themes/coo/source/css/style.tailwindcss', '-o', 'themes/coo/source/css/style.css'],
@@ -231,17 +371,22 @@ export function build(hash) {
       output
     );
     run(bin('hexo'), ['generate', '--config', configs, '--silent'], opts, output);
-    run(bin('gulp'), ['--max-old-space-size=4096'], opts, output);
+    run(bin('gulp'), [], opts, output);
 
     const pages = verify(staging);
+    writeFileSync(join(staging, '.complete'), new Date().toISOString());
     const release = join(paths.releases, hash);
-    rmSync(release, { recursive: true, force: true });
+    if (existsSync(release)) {
+      const deleting = join(paths.releases, `.deleting-${hash}`);
+      renameSync(release, deleting);
+      rmSync(deleting, { recursive: true, force: true });
+    }
     renameSync(staging, release);
     activate(hash);
     prune(hash);
-    rmSync(failedLog(hash), { force: true });
+    clearFailed(hash);
     log(`built ${hash}: ${pages} pages in ${((Date.now() - started) / 1000).toFixed(1)} s`);
-    return true;
+    return 'built';
   } catch (error) {
     const reason = error instanceof ConfigError ? error.message : error.stack || String(error);
     const report = `${reason}\n\n${output.join('\n')}`;
@@ -251,23 +396,26 @@ export function build(hash) {
       `build ${hash} failed, keeping ${currentHash() || 'nothing'}; details in ${failedLog(hash)}`
     );
     rmSync(staging, { recursive: true, force: true });
-    return false;
+    return 'failed';
   } finally {
     if (src) rmSync(src, { recursive: true, force: true });
     rmSync(overlay, { force: true });
+    releaseLock();
   }
 }
 
 /** Bring the served site in line with the current inputs. Returns what happened. */
 export function reconcile({ force = false } = {}) {
-  const hash = computeHash();
+  const snapshot = readInputs();
+  const hash = hashInputs(snapshot);
   if (hash === currentHash()) return { hash, action: 'current' };
   if (hasRelease(hash)) {
     activate(hash);
     return { hash, action: 'activated' };
   }
-  if (hasFailed(hash) && !force) return { hash, action: 'failed' };
-  return { hash, action: build(hash) ? 'built' : 'failed' };
+  if (hasFailed(hash)) {
+    if (!force) return { hash, action: 'failed' };
+    clearFailed(hash);
+  }
+  return { hash, action: build(snapshot, hash) };
 }
-
-export { log, resolve };

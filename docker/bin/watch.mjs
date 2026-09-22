@@ -8,16 +8,25 @@
  */
 import { existsSync, watch } from 'node:fs';
 import { dirname } from 'node:path';
-import { computeHash, currentHash, hasFailed, log, paths, reconcile } from '../lib/site.mjs';
+import {
+  currentHash,
+  hasFailed,
+  hashInputs,
+  intEnv,
+  log,
+  paths,
+  readInputs,
+  reconcile,
+  sweep
+} from '../lib/site.mjs';
 
-const interval =
-  Math.max(Number.parseInt(process.env.REFERENCE_WATCH_INTERVAL || '10', 10), 1) * 1000;
+const interval = intEnv('REFERENCE_WATCH_INTERVAL', 10) * 1000;
 const debounce = 1500;
 
 let timer = null;
 let running = false;
 let pending = false;
-let reportedFailure = null;
+let reported = null;
 
 function check() {
   if (running) {
@@ -26,12 +35,12 @@ function check() {
   }
   running = true;
   try {
-    const hash = computeHash();
+    const hash = hashInputs(readInputs());
     if (hash !== currentHash()) {
       if (hasFailed(hash)) {
-        if (reportedFailure !== hash) {
-          log(`inputs ${hash} failed to build earlier; fix them or run rebuild --force`);
-          reportedFailure = hash;
+        if (reported !== hash) {
+          log(`inputs ${hash} failed to build earlier; fix them or run rebuild.mjs --force`);
+          reported = hash;
         }
       } else {
         const result = reconcile();
@@ -39,7 +48,10 @@ function check() {
       }
     }
   } catch (error) {
-    log(`check failed: ${error.message}`);
+    if (reported !== error.message) {
+      log(`check failed: ${error.message}`);
+      reported = error.message;
+    }
   } finally {
     running = false;
     if (pending) {
@@ -54,10 +66,15 @@ function schedule() {
   timer = setTimeout(check, debounce);
 }
 
+sweep();
+
 for (const target of [dirname(paths.config), paths.data]) {
   if (!existsSync(target)) continue;
   try {
-    watch(target, { recursive: true, persistent: false }, schedule);
+    const watcher = watch(target, { recursive: true, persistent: false }, schedule);
+    watcher.on('error', (error) =>
+      log(`stopped watching ${target} (${error.message}); polling only`)
+    );
     log(`watching ${target}`);
   } catch (error) {
     log(`cannot watch ${target} (${error.message}); polling only`);

@@ -19,9 +19,12 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile --ignore-scripts
 
 COPY . .
-ARG BUILD_ID=dev
+# CI passes the commit sha. A local build gets a hash of the site inputs, so
+# that a rebuilt image never reuses releases cached on a mounted /srv.
+ARG BUILD_ID=
 ENV NODE_ENV=production
-RUN echo "${BUILD_ID}" > BUILD_ID \
+RUN if [ -n "${BUILD_ID}" ]; then echo "${BUILD_ID}" > BUILD_ID; \
+    else find source themes _config.yml package.json docker tools -type f | sort | xargs cat | sha256sum | cut -c1-16 > BUILD_ID; fi \
     && node tools/vendor.mjs \
     && node docker/bin/rebuild.mjs \
     && node tools/check-site.mjs /srv/www \
@@ -36,6 +39,7 @@ RUN apk add --no-cache nginx \
 COPY --from=build --chown=node:node /app /app
 COPY --from=build --chown=node:node /srv /srv
 COPY docker/nginx.conf /etc/nginx/nginx.conf
+COPY docker/nginx-headers.conf /etc/nginx/reference-headers.conf
 
 ENV NODE_ENV=production \
     REFERENCE_CONFIG=/config/site.yml \

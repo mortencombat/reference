@@ -7,11 +7,18 @@ services:
     ports:
       - "8080:8080"
     volumes:
+      # Mount the directories, not the files: editors save by replacing the
+      # file, which a single-file bind mount does not follow.
       - ./config:/config:ro
       - ./data:/data:ro
       # Optional: keep built releases across container recreation so that
       # switching back to an earlier config is instant.
       # - reference-srv:/srv
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
 # volumes:
 #   reference-srv:
