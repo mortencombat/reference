@@ -85,7 +85,7 @@ theme_config:
       Cheat Sheets
       for Developers
     # Paragraph under the headline. Empty to omit.
-    tagline: Quick references and cheat sheets, crafted by the open community, to boost your productivity.
+    tagline: Quick references and cheat sheets to boost your productivity.
     # Optional buttons under the tagline. `icon` is the name of an SVG in
     # source/assets/icon (for example "github"); omit it for a text button.
     links: []

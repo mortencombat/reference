@@ -58,7 +58,7 @@ hero:
     Cheat Sheets
     for Developers
   # Paragraph under the headline; empty to omit
-  tagline: Quick references and cheat sheets, crafted by the open community, to boost your productivity.
+  tagline: Quick references and cheat sheets to boost your productivity.
   # Optional call-to-action buttons: [{ label: ..., url: ..., icon: github }]
   links: []
 
