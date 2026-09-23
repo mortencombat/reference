@@ -34,13 +34,24 @@ theme_config:
   # here and no game sheet is built. Your own sheets need one of these
   # categories too.
   #
-  # An entry is either a name (the whole category) or an object that keeps
-  # only some of its sheets, or all but some:
-  #   - name: Game
-  #     only: [minecraft-java]
-  #   - name: Toolkit
-  #     except: [alan-ai]
-  # A sheet in several categories is built if any of them admits it.
+  # An entry is either a name (the category as the sheets declare it) or an
+  # object that adjusts it:
+  #   include: [slugs]  additive, sheets from anywhere join this category
+  #   except: [slugs]   subtractive
+  #   only: [slugs]     exact membership, sheets from anywhere; cannot be
+  #                     combined with include or except
+  #   sort: date | -date | title | -title | listed
+  #                     order within the section; listed needs an only list
+  # A category of your own is just a new name with include or only, or
+  # sheets under /data/posts that declare it. Examples:
+  #   - name: Keyboard Shortcuts
+  #     include: [windows-shortcuts]
+  #     except: [apex-legends]
+  #   - name: Team
+  #     only: [bash, git, docker]
+  #     sort: listed
+  # A sheet is built if any category admits it. Its categories become the
+  # ones configured here, so search and metadata agree with the home page.
   categories:
     - AI
     - Programming
@@ -55,8 +66,12 @@ theme_config:
     - Game
     - Other
 
+  # Order of sheets within every section unless a category sets its own
+  # sort: date (oldest first, as upstream), -date, title or -title.
+  sort_posts: date
+
   # Cheat sheets to leave out of every category (slugs, the file name
-  # without .md). For trimming a single category, use only/except above.
+  # without .md). For trimming a single category, use except above.
   exclude_posts: []
   #  - apex-legends
   #  - apple-music
