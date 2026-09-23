@@ -16,7 +16,10 @@ cleanup() {
   echo "-- container log (tail)"
   docker logs "$name" 2>&1 | grep -v 'GET /' | tail -30 || true
   docker rm -f "$name" >/dev/null 2>&1 || true
-  rm -rf "$work"
+  # The last scenario writes into the bind-mounted /srv as uid 12345; remove
+  # that as the same uid, since the host user may not be allowed to.
+  docker run --rm --user 12345:12345 -v "$work/srv:/srv" --entrypoint sh "$image" -c 'rm -rf /srv/* /srv/.[!.]*' >/dev/null 2>&1 || true
+  rm -rf "$work" || true
 }
 trap cleanup EXIT
 
