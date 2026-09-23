@@ -61,7 +61,8 @@ wait_for() {
 mkdir -p "$work/config" "$work/data/posts" "$work/data/icons"
 chmod -R a+rX "$work"
 
-docker run -d --name "$name" -p "${port}:8080" --read-only --tmpfs /tmp \
+# Read-only root filesystem: /srv must then be a mount (here a tmpfs), as in compose.yml.
+docker run -d --name "$name" -p "${port}:8080" --read-only --tmpfs /tmp --tmpfs /srv:uid=1000,gid=1000 \
   -v "$work/config:/config:ro" -v "$work/data:/data:ro" "$image" >/dev/null
 
 echo "-- default site"
