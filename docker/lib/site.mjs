@@ -251,10 +251,19 @@ function removeThrough(file) {
   }
 }
 
-/** Remove leftovers of interrupted builds and prunes. Run at startup. */
+/**
+ * Remove leftovers of interrupted builds and prunes, and forget earlier
+ * failures so that a restart retries the current inputs once: a restart
+ * usually means the operator changed something outside the inputs, such
+ * as mount permissions. Run at startup.
+ */
 export function sweep() {
   mkdirSync(paths.releases, { recursive: true });
   mkdirSync(join(paths.state, 'failed'), { recursive: true });
+  const failed = readdirSync(join(paths.state, 'failed')).filter((name) => name.endsWith('.log'));
+  for (const name of failed) rmSync(join(paths.state, 'failed', name), { force: true });
+  if (failed.length > 0)
+    log(`forgot ${failed.length} earlier build failure(s); the current inputs will be retried`);
   for (const [dir, prefixes] of [
     [paths.releases, ['.staging-', '.deleting-']],
     [paths.state, ['src-', 'overlay-']]
