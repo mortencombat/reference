@@ -61,7 +61,7 @@ wait_for() {
 mkdir -p "$work/config" "$work/data/posts" "$work/data/icons"
 chmod -R a+rX "$work"
 
-docker run -d --name "$name" -p "${port}:8080" \
+docker run -d --name "$name" -p "${port}:8080" --read-only --tmpfs /tmp \
   -v "$work/config:/config:ro" -v "$work/data:/data:ro" "$image" >/dev/null
 
 echo "-- default site"
@@ -120,5 +120,16 @@ echo "-- shutdown"
 start=$(date +%s)
 docker stop -t 15 "$name" >/dev/null
 [ $(( $(date +%s) - start )) -le 15 ] || fail "container took too long to stop"
+docker rm -f "$name" >/dev/null
+
+echo "-- arbitrary uid, bind-mounted /srv, seeded first start"
+mkdir -p "$work/srv" && chmod 0777 "$work/srv"
+printf 'title: Seeded Sheets\n' > "$work/config/site.yml"
+docker run -d --name "$name" -p "${port}:8080" --read-only --tmpfs /tmp --user 12345:12345 \
+  -v "$work/config:/config:ro" -v "$work/data:/data:ro" -v "$work/srv:/srv" "$image" >/dev/null
+wait_for "$base/healthz" '<title>Reference' 10
+docker logs "$name" 2>&1 | grep -q 'seeded release' || fail "expected the image release to be seeded into /srv"
+wait_for "$base/" '<title>Seeded Sheets' 60
+[ -d "$work/srv/releases" ] || fail "expected releases under the bind-mounted /srv"
 
 echo "smoke test passed"
