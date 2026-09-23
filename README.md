@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/github/license/mortencombat/reference)](LICENSE)
 [![CI](https://github.com/mortencombat/reference/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mortencombat/reference/actions/workflows/ci.yml)
 [![Publish image](https://github.com/mortencombat/reference/actions/workflows/release.yml/badge.svg)](https://github.com/mortencombat/reference/actions/workflows/release.yml)
-[![Container image](https://img.shields.io/badge/ghcr.io-reference%3Alatest-2496ed?logo=docker&logoColor=white)](https://github.com/mortencombat/reference/pkgs/container/reference)
+[![Container image](https://img.shields.io/github/v/release/mortencombat/reference?label=ghcr.io%20reference&logo=docker&logoColor=white&color=2496ed)](https://github.com/mortencombat/reference/pkgs/container/reference)
 [![Built on Fechin/reference](https://img.shields.io/badge/built%20on-Fechin%2Freference-3fb950?logo=github&logoColor=white)](https://github.com/Fechin/reference)
 
 Cheat sheets for developers, packaged as a Docker image you can run on your own infrastructure.
@@ -52,8 +52,8 @@ other uid works with `user:` as long as it owns the `/srv` mount. The image writ
 runs with a read-only root filesystem and a tmpfs on `/tmp`, as `compose.yml` shows. On first start with an empty
 `/srv`, the release baked into the image is copied in, so the site is served immediately.
 
-Image tags: `latest`, `sha-<commit>` and a `YYYY.MM.DD` date tag for every build. Images are built for `linux/amd64`
-and `linux/arm64`.
+Image tags: `latest` for the current build of `main`; `1`, `1.4` and `1.4.2` for releases; `sha-<commit>` and a
+`YYYY.MM.DD` date tag for every build. Images are built for `linux/amd64` and `linux/arm64`.
 
 ## Configuration
 
@@ -161,7 +161,10 @@ Environment variables: `REFERENCE_WATCH_INTERVAL` (seconds, default 10), `REFERE
   release id, the image build id and when the release was built and activated.
 - **After a failure.** A build failure keeps the previous release and is logged with the reason; the same inputs
   are retried on the next container start, or immediately with `rebuild.mjs --force`.
-- **Tags.** `latest` follows `main`; `sha-<commit>` and the `YYYY.MM.DD` date tags identify a specific build.
+- **Tags.** `latest` follows `main`. Releases are cut from the commit history with semantic versions: `1`,
+  `1.4` and `1.4.2` style tags, a `v1.4.2` git tag and a GitHub release with the changelog. A major bump means the
+  configuration changed incompatibly; the release notes say what to update. `sha-<commit>` and the `YYYY.MM.DD`
+  date tags identify any build, including the nightly content syncs between releases.
 
 ## Keeping up with upstream
 
