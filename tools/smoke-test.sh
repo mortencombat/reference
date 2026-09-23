@@ -16,7 +16,10 @@ cleanup() {
   echo "-- container log (tail)"
   docker logs "$name" 2>&1 | grep -v 'GET /' | tail -30 || true
   docker rm -f "$name" >/dev/null 2>&1 || true
-  rm -rf "$work"
+  # The last scenario writes into the bind-mounted /srv as uid 12345; remove
+  # that as the same uid, since the host user may not be allowed to.
+  docker run --rm --user 12345:12345 -v "$work/srv:/srv" --entrypoint sh "$image" -c 'rm -rf /srv/* /srv/.[!.]*' >/dev/null 2>&1 || true
+  rm -rf "$work" || true
 }
 trap cleanup EXIT
 
@@ -48,6 +51,13 @@ expect_status() {
   [ "$got" = "$want" ] || fail "expected HTTP $want for $url, got $got"
 }
 
+# Same reason as fetch(): capture the log before grepping it.
+log_has() {
+  local logs
+  logs="$(docker logs "$name" 2>&1)"
+  grep -qE -- "$1" <<<"$logs"
+}
+
 wait_for() {
   local url="$1" pattern="$2" tries="${3:-30}" body
   for _ in $(seq "$tries"); do
@@ -61,7 +71,8 @@ wait_for() {
 mkdir -p "$work/config" "$work/data/posts" "$work/data/icons"
 chmod -R a+rX "$work"
 
-docker run -d --name "$name" -p "${port}:8080" \
+# Read-only root filesystem: /srv must then be a mount (here a tmpfs), as in compose.yml.
+docker run -d --name "$name" -p "${port}:8080" --read-only --tmpfs /tmp --tmpfs /srv:uid=1000,gid=1000 \
   -v "$work/config:/config:ro" -v "$work/data:/data:ro" "$image" >/dev/null
 
 echo "-- default site"
@@ -71,6 +82,7 @@ expect_has "$base/bash.html" 'Bash'
 expect_has "$base/bash" 'Bash'
 expect_status "$base/does-not-exist" 404
 expect_has "$base/search.json" '"/apex-legends.html"'
+expect_has "$base/status.json" '"release": "[0-9a-f]\{16\}"'
 
 echo "-- custom config, post and icon"
 cat > "$work/config/site.yml" <<'YAML'
@@ -97,6 +109,8 @@ cat > "$work/data/icons/smoke.svg" <<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" id="smoke-icon"/></svg>
 SVG
 wait_for "$base/" '<title>Smoke Test Sheets' 60
+release="$(fetch "$base/status.json" | grep -o '"release": "[0-9a-f]*"' | cut -d'"' -f4)"
+[ -n "$release" ] && docker exec "$name" test -f "/srv/releases/$release/.complete" || fail "status.json does not name the served release"
 expect_has "$base/smoke.html" 'Hello from the smoke test'
 expect_has "$base/" 'smoke-icon'
 expect_status "$base/apex-legends.html" 404
@@ -108,7 +122,7 @@ echo "-- invalid config keeps the current site"
 printf 'title: 42\n' > "$work/config/site.yml"
 sleep 15
 expect_has "$base/" '<title>Smoke Test Sheets'
-docker logs "$name" 2>&1 | grep -qE 'build [0-9a-f]{16} failed' || fail "expected a recorded build failure in the log"
+log_has 'build [0-9a-f]{16} failed' || fail "expected a recorded build failure in the log"
 docker exec "$name" node docker/bin/rebuild.mjs --force >/dev/null 2>&1 && fail "rebuild --force should fail on an invalid config" || true
 
 echo "-- recovery"
@@ -120,5 +134,16 @@ echo "-- shutdown"
 start=$(date +%s)
 docker stop -t 15 "$name" >/dev/null
 [ $(( $(date +%s) - start )) -le 15 ] || fail "container took too long to stop"
+docker rm -f "$name" >/dev/null
+
+echo "-- arbitrary uid, bind-mounted /srv, seeded first start"
+mkdir -p "$work/srv" && chmod 0777 "$work/srv"
+printf 'title: Seeded Sheets\n' > "$work/config/site.yml"
+docker run -d --name "$name" -p "${port}:8080" --read-only --tmpfs /tmp --user 12345:12345 \
+  -v "$work/config:/config:ro" -v "$work/data:/data:ro" -v "$work/srv:/srv" "$image" >/dev/null
+wait_for "$base/healthz" '<title>Reference' 10
+log_has 'seeded release' || fail "expected the image release to be seeded into /srv"
+wait_for "$base/" '<title>Seeded Sheets' 60
+[ -d "$work/srv/releases" ] || fail "expected releases under the bind-mounted /srv"
 
 echo "smoke test passed"

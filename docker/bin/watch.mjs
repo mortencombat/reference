@@ -15,8 +15,10 @@ import {
   intEnv,
   log,
   paths,
+  preflight,
   readInputs,
   reconcile,
+  seed,
   sweep
 } from '../lib/site.mjs';
 
@@ -66,7 +68,9 @@ function schedule() {
   timer = setTimeout(check, debounce);
 }
 
+if (!preflight()) process.exit(1);
 sweep();
+seed();
 
 for (const target of [dirname(paths.config), paths.data]) {
   if (!existsSync(target)) continue;

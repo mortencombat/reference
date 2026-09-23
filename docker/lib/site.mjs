@@ -28,7 +28,8 @@ import {
   writeFileSync,
   writeSync
 } from 'node:fs';
-import { basename, join } from 'node:path';
+import { accessSync, constants } from 'node:fs';
+import { basename, dirname, join } from 'node:path';
 import Ajv from 'ajv';
 import yaml from 'js-yaml';
 
@@ -208,7 +209,25 @@ export function activate(hash) {
   renameSync(tmp, paths.www);
   const now = new Date();
   utimesSync(target, now, now); // newest release is the last one pruned
+  writeStatus(hash, now);
   log(`serving release ${hash}`);
+}
+
+/** /status.json: what is being served, for monitors. Served by nginx from /srv/state. */
+function writeStatus(hash, activatedAt) {
+  let builtAt = null;
+  try {
+    builtAt = readFileSync(join(paths.releases, hash, '.complete'), 'utf8').trim();
+  } catch {
+    // seeded or legacy release without a marker
+  }
+  const status = {
+    release: hash,
+    build: buildId(),
+    builtAt,
+    activatedAt: activatedAt.toISOString()
+  };
+  writeFileSync(join(paths.state, 'status.json'), JSON.stringify(status, null, 2));
 }
 
 function prune(current) {
@@ -225,10 +244,78 @@ function prune(current) {
   }
 }
 
-/** Remove leftovers of interrupted builds and prunes. Run at startup. */
+/** Log who we run as and whether the mounts are usable; returns false if /srv cannot be written. */
+export function preflight() {
+  const uid = process.getuid ? process.getuid() : '?';
+  const gid = process.getgid ? process.getgid() : '?';
+  log(`running as uid ${uid} gid ${gid}`);
+  const readable = (target, what) => {
+    if (!existsSync(target)) {
+      log(`${what}: ${target} not mounted; using defaults`);
+      return;
+    }
+    try {
+      accessSync(target, constants.R_OK);
+      log(`${what}: ${target} readable`);
+    } catch {
+      log(
+        `${what}: ${target} is NOT readable by uid ${uid}; fix the mount's ownership or set the container's user`
+      );
+    }
+  };
+  readable(paths.config, 'config');
+  readable(paths.data, 'data');
+  try {
+    mkdirSync(paths.releases, { recursive: true });
+    accessSync(dirname(paths.releases), constants.W_OK);
+    return true;
+  } catch (error) {
+    log(
+      `state: ${dirname(paths.releases)} is NOT writable by uid ${uid} (${error.code}); mount a volume there owned by that user`
+    );
+    return false;
+  }
+}
+
+/** Copy the release baked into the image into /srv when no complete release is there. */
+export function seed() {
+  const seedDir = join(paths.app, 'seed');
+  if (!existsSync(seedDir)) return null;
+  mkdirSync(paths.releases, { recursive: true });
+  if (readdirSync(paths.releases).some((name) => hasRelease(name))) return null;
+  for (const name of readdirSync(seedDir)) {
+    if (!existsSync(join(seedDir, name, '.complete'))) continue;
+    cpSync(join(seedDir, name), join(paths.releases, name), { recursive: true });
+    if (!currentHash()) activate(name);
+    log(`seeded release ${name} from the image`);
+    return name;
+  }
+  return null;
+}
+
+/** Remove a file, or the target of a symlink (the image links db.json into /srv/state). */
+function removeThrough(file) {
+  try {
+    const target = readlinkSync(file);
+    rmSync(target, { force: true });
+  } catch {
+    rmSync(file, { force: true });
+  }
+}
+
+/**
+ * Remove leftovers of interrupted builds and prunes, and forget earlier
+ * failures so that a restart retries the current inputs once: a restart
+ * usually means the operator changed something outside the inputs, such
+ * as mount permissions. Run at startup.
+ */
 export function sweep() {
   mkdirSync(paths.releases, { recursive: true });
   mkdirSync(join(paths.state, 'failed'), { recursive: true });
+  const failed = readdirSync(join(paths.state, 'failed')).filter((name) => name.endsWith('.log'));
+  for (const name of failed) rmSync(join(paths.state, 'failed', name), { force: true });
+  if (failed.length > 0)
+    log(`forgot ${failed.length} earlier build failure(s); the current inputs will be retried`);
   for (const [dir, prefixes] of [
     [paths.releases, ['.staging-', '.deleting-']],
     [paths.state, ['src-', 'overlay-']]
@@ -350,7 +437,7 @@ export function build(snapshot, hash) {
     );
     src = stageSource(hash, snapshot);
     rmSync(staging, { recursive: true, force: true });
-    rmSync(join(paths.app, 'db.json'), { force: true });
+    removeThrough(join(paths.app, 'db.json'));
     writeFileSync(overlay, yaml.dump({ source_dir: src, public_dir: staging }));
 
     const bin = (name) => join(paths.app, 'node_modules', '.bin', name);
@@ -370,7 +457,7 @@ export function build(snapshot, hash) {
       opts,
       output
     );
-    run(bin('hexo'), ['generate', '--config', configs, '--silent'], opts, output);
+    run(bin('hexo'), ['generate', '--config', configs], opts, output);
     run(bin('gulp'), [], opts, output);
 
     const pages = verify(staging);
