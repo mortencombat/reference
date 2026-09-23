@@ -39,15 +39,18 @@ docker run -d --name reference -p 8080:8080 \
 
 Or use the [compose.yml](compose.yml) in this repository.
 
-| Mount               | Purpose                                                      |
-| ------------------- | ------------------------------------------------------------ |
-| `/config/site.yml`  | Site configuration. See `config/site.example.yml`.           |
-| `/data/posts/*.md`  | Your own cheat sheets. Same format as the upstream sheets.   |
-| `/data/icons/*.svg` | Icons for your cheat sheets, named after the post slug.      |
-| `/srv` (optional)   | Built releases. Mount a volume to keep them across restarts. |
+| Mount               | Purpose                                                                                   |
+| ------------------- | ----------------------------------------------------------------------------------------- |
+| `/config/site.yml`  | Site configuration. See `config/site.example.yml`.                                        |
+| `/data/posts/*.md`  | Your own cheat sheets. Same format as the upstream sheets.                                |
+| `/data/icons/*.svg` | Icons for your cheat sheets, named after the post slug.                                   |
+| `/srv` (optional)   | Built releases and build state. Mount a volume or directory to keep them across restarts. |
 
 Mount the directories rather than single files: editors save by replacing the file, and a single-file bind mount
-keeps pointing at the old copy.
+keeps pointing at the old copy. The mounts must be readable by the container's user, uid 1000 by default; any
+other uid works with `user:` as long as it owns the `/srv` mount. The image writes only to `/srv` and `/tmp`, so it
+runs with a read-only root filesystem and a tmpfs on `/tmp`, as `compose.yml` shows. On first start with an empty
+`/srv`, the release baked into the image is copied in, so the site is served immediately.
 
 Image tags: `latest`, `sha-<commit>` and a `YYYY.MM.DD` date tag for every build. Images are built for `linux/amd64`
 and `linux/arm64`.

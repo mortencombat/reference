@@ -225,6 +225,32 @@ function prune(current) {
   }
 }
 
+/** Copy the release baked into the image into /srv when no complete release is there. */
+export function seed() {
+  const seedDir = join(paths.app, 'seed');
+  if (!existsSync(seedDir)) return null;
+  mkdirSync(paths.releases, { recursive: true });
+  if (readdirSync(paths.releases).some((name) => hasRelease(name))) return null;
+  for (const name of readdirSync(seedDir)) {
+    if (!existsSync(join(seedDir, name, '.complete'))) continue;
+    cpSync(join(seedDir, name), join(paths.releases, name), { recursive: true });
+    if (!currentHash()) activate(name);
+    log(`seeded release ${name} from the image`);
+    return name;
+  }
+  return null;
+}
+
+/** Remove a file, or the target of a symlink (the image links db.json into /srv/state). */
+function removeThrough(file) {
+  try {
+    const target = readlinkSync(file);
+    rmSync(target, { force: true });
+  } catch {
+    rmSync(file, { force: true });
+  }
+}
+
 /** Remove leftovers of interrupted builds and prunes. Run at startup. */
 export function sweep() {
   mkdirSync(paths.releases, { recursive: true });
@@ -350,7 +376,7 @@ export function build(snapshot, hash) {
     );
     src = stageSource(hash, snapshot);
     rmSync(staging, { recursive: true, force: true });
-    rmSync(join(paths.app, 'db.json'), { force: true });
+    removeThrough(join(paths.app, 'db.json'));
     writeFileSync(overlay, yaml.dump({ source_dir: src, public_dir: staging }));
 
     const bin = (name) => join(paths.app, 'node_modules', '.bin', name);

@@ -17,6 +17,7 @@ import {
   paths,
   readInputs,
   reconcile,
+  seed,
   sweep
 } from '../lib/site.mjs';
 
@@ -67,6 +68,7 @@ function schedule() {
 }
 
 sweep();
+seed();
 
 for (const target of [dirname(paths.config), paths.data]) {
   if (!existsSync(target)) continue;

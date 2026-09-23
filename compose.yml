@@ -8,17 +8,25 @@ services:
       - "8080:8080"
     volumes:
       # Mount the directories, not the files: editors save by replacing the
-      # file, which a single-file bind mount does not follow.
+      # file, which a single-file bind mount does not follow. They must be
+      # readable by the container's user (uid 1000 unless `user:` is set).
       - ./config:/config:ro
       - ./data:/data:ro
-      # Optional: keep built releases across container recreation so that
-      # switching back to an earlier config is instant.
-      # - reference-srv:/srv
+      # Built releases and build state. Keeping them across recreation makes
+      # switching back to an earlier config instant. A bind mount works too;
+      # the release baked into the image is copied in on first start.
+      - reference-srv:/srv
+    # The image writes only to /srv and /tmp, so the root filesystem can be
+    # read-only. Any uid works, e.g. user: "1234:1234" owning the mounts.
+    read_only: true
+    tmpfs:
+      - /tmp
+    # user: "1000:1000"
     restart: unless-stopped
     logging:
       driver: json-file
       options:
         max-size: 10m
         max-file: "3"
-# volumes:
-#   reference-srv:
+volumes:
+  reference-srv:
