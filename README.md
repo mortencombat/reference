@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/github/license/mortencombat/reference)](LICENSE)
 [![CI](https://github.com/mortencombat/reference/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mortencombat/reference/actions/workflows/ci.yml)
 [![Publish image](https://github.com/mortencombat/reference/actions/workflows/release.yml/badge.svg)](https://github.com/mortencombat/reference/actions/workflows/release.yml)
-[![Container image](https://img.shields.io/badge/ghcr.io-reference%3Alatest-2496ed?logo=docker&logoColor=white)](https://github.com/mortencombat/reference/pkgs/container/reference)
+[![Container image](https://img.shields.io/github/v/release/mortencombat/reference?label=ghcr.io%20reference&logo=docker&logoColor=white&color=2496ed)](https://github.com/mortencombat/reference/pkgs/container/reference)
 [![Built on Fechin/reference](https://img.shields.io/badge/built%20on-Fechin%2Freference-3fb950?logo=github&logoColor=white)](https://github.com/Fechin/reference)
 
 Cheat sheets for developers, packaged as a Docker image you can run on your own infrastructure.
