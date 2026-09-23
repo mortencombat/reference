@@ -3,7 +3,6 @@
 [![License](https://img.shields.io/github/license/mortencombat/reference)](LICENSE)
 [![CI](https://github.com/mortencombat/reference/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/mortencombat/reference/actions/workflows/ci.yml)
 [![Publish image](https://github.com/mortencombat/reference/actions/workflows/release.yml/badge.svg)](https://github.com/mortencombat/reference/actions/workflows/release.yml)
-[![Upstream sync](https://github.com/mortencombat/reference/actions/workflows/upstream-sync.yml/badge.svg)](https://github.com/mortencombat/reference/actions/workflows/upstream-sync.yml)
 [![Container image](https://img.shields.io/badge/ghcr.io-reference%3Alatest-2496ed?logo=docker&logoColor=white)](https://github.com/mortencombat/reference/pkgs/container/reference)
 [![Built on Fechin/reference](https://img.shields.io/badge/built%20on-Fechin%2Freference-3fb950?logo=github&logoColor=white)](https://github.com/Fechin/reference)
 
