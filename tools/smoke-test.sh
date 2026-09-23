@@ -82,6 +82,7 @@ expect_has "$base/bash.html" 'Bash'
 expect_has "$base/bash" 'Bash'
 expect_status "$base/does-not-exist" 404
 expect_has "$base/search.json" '"/apex-legends.html"'
+expect_has "$base/status.json" '"release": "[0-9a-f]\{16\}"'
 
 echo "-- custom config, post and icon"
 cat > "$work/config/site.yml" <<'YAML'
@@ -108,6 +109,8 @@ cat > "$work/data/icons/smoke.svg" <<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" id="smoke-icon"/></svg>
 SVG
 wait_for "$base/" '<title>Smoke Test Sheets' 60
+release="$(fetch "$base/status.json" | grep -o '"release": "[0-9a-f]*"' | cut -d'"' -f4)"
+[ -n "$release" ] && docker exec "$name" test -f "/srv/releases/$release/.complete" || fail "status.json does not name the served release"
 expect_has "$base/smoke.html" 'Hello from the smoke test'
 expect_has "$base/" 'smoke-icon'
 expect_status "$base/apex-legends.html" 404

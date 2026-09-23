@@ -209,7 +209,25 @@ export function activate(hash) {
   renameSync(tmp, paths.www);
   const now = new Date();
   utimesSync(target, now, now); // newest release is the last one pruned
+  writeStatus(hash, now);
   log(`serving release ${hash}`);
+}
+
+/** /status.json: what is being served, for monitors. Served by nginx from /srv/state. */
+function writeStatus(hash, activatedAt) {
+  let builtAt = null;
+  try {
+    builtAt = readFileSync(join(paths.releases, hash, '.complete'), 'utf8').trim();
+  } catch {
+    // seeded or legacy release without a marker
+  }
+  const status = {
+    release: hash,
+    build: buildId(),
+    builtAt,
+    activatedAt: activatedAt.toISOString()
+  };
+  writeFileSync(join(paths.state, 'status.json'), JSON.stringify(status, null, 2));
 }
 
 function prune(current) {
