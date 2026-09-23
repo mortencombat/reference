@@ -52,8 +52,8 @@ other uid works with `user:` as long as it owns the `/srv` mount. The image writ
 runs with a read-only root filesystem and a tmpfs on `/tmp`, as `compose.yml` shows. On first start with an empty
 `/srv`, the release baked into the image is copied in, so the site is served immediately.
 
-Image tags: `latest`, `sha-<commit>` and a `YYYY.MM.DD` date tag for every build. Images are built for `linux/amd64`
-and `linux/arm64`.
+Image tags: `latest` for the current build of `main`; `1`, `1.4` and `1.4.2` for releases; `sha-<commit>` and a
+`YYYY.MM.DD` date tag for every build. Images are built for `linux/amd64` and `linux/arm64`.
 
 ## Configuration
 
