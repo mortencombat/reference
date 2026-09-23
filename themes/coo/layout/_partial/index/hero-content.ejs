@@ -7,7 +7,7 @@ const titleLines = String(hero.title || 'Cheat Sheets').split(/\r?\n/).map((l) =
 <div class="w-full flex flex-col text-center pt-3 pb-8 relative z-30">
     <div class="max-container lg:w-4/5 xl:w-3/4 relative z-30">
         <!-- Main Heading -->
-        <h1 class="text-4xl md:text-5xl lg:text-6xl text-white leading-tight font-bold tracking-tight">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl text-white leading-tight font-bold tracking-tight<%= hero.tagline ? '' : ' mb-8' %>">
              <span class="relative whitespace-nowrap">
                 <svg aria-hidden="true" viewBox="0 0 418 42"
                      class="absolute top-2/3 left-0 h-[0.58em] w-full fill-pink-300/60"
