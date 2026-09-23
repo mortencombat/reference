@@ -51,6 +51,13 @@ expect_status() {
   [ "$got" = "$want" ] || fail "expected HTTP $want for $url, got $got"
 }
 
+# Same reason as fetch(): capture the log before grepping it.
+log_has() {
+  local logs
+  logs="$(docker logs "$name" 2>&1)"
+  grep -qE -- "$1" <<<"$logs"
+}
+
 wait_for() {
   local url="$1" pattern="$2" tries="${3:-30}" body
   for _ in $(seq "$tries"); do
@@ -112,7 +119,7 @@ echo "-- invalid config keeps the current site"
 printf 'title: 42\n' > "$work/config/site.yml"
 sleep 15
 expect_has "$base/" '<title>Smoke Test Sheets'
-docker logs "$name" 2>&1 | grep -qE 'build [0-9a-f]{16} failed' || fail "expected a recorded build failure in the log"
+log_has 'build [0-9a-f]{16} failed' || fail "expected a recorded build failure in the log"
 docker exec "$name" node docker/bin/rebuild.mjs --force >/dev/null 2>&1 && fail "rebuild --force should fail on an invalid config" || true
 
 echo "-- recovery"
@@ -132,7 +139,7 @@ printf 'title: Seeded Sheets\n' > "$work/config/site.yml"
 docker run -d --name "$name" -p "${port}:8080" --read-only --tmpfs /tmp --user 12345:12345 \
   -v "$work/config:/config:ro" -v "$work/data:/data:ro" -v "$work/srv:/srv" "$image" >/dev/null
 wait_for "$base/healthz" '<title>Reference' 10
-docker logs "$name" 2>&1 | grep -q 'seeded release' || fail "expected the image release to be seeded into /srv"
+log_has 'seeded release' || fail "expected the image release to be seeded into /srv"
 wait_for "$base/" '<title>Seeded Sheets' 60
 [ -d "$work/srv/releases" ] || fail "expected releases under the bind-mounted /srv"
 
