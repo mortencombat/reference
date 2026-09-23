@@ -76,8 +76,12 @@ docker run -d --name "$name" -p "${port}:8080" --read-only --tmpfs /tmp --tmpfs 
   -v "$work/config:/config:ro" -v "$work/data:/data:ro" "$image" >/dev/null
 
 echo "-- default site"
-wait_for "$base/healthz" '<title>Reference'
+wait_for "$base/healthz" '^ok$'
 expect_has "$base/" '<title>Reference'
+for p in healthz status.json; do
+  headers="$(curl -sI "$base/$p")"
+  grep -qi 'Cache-Control: no-store' <<<"$headers" || fail "expected Cache-Control: no-store on /$p"
+done
 expect_has "$base/bash.html" 'Bash'
 expect_has "$base/bash" 'Bash'
 expect_status "$base/does-not-exist" 404
@@ -141,7 +145,7 @@ mkdir -p "$work/srv" && chmod 0777 "$work/srv"
 printf 'title: Seeded Sheets\n' > "$work/config/site.yml"
 docker run -d --name "$name" -p "${port}:8080" --read-only --tmpfs /tmp --user 12345:12345 \
   -v "$work/config:/config:ro" -v "$work/data:/data:ro" -v "$work/srv:/srv" "$image" >/dev/null
-wait_for "$base/healthz" '<title>Reference' 10
+wait_for "$base/healthz" '^ok$' 10
 log_has 'seeded release' || fail "expected the image release to be seeded into /srv"
 wait_for "$base/" '<title>Seeded Sheets' 60
 [ -d "$work/srv/releases" ] || fail "expected releases under the bind-mounted /srv"
