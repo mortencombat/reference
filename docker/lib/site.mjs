@@ -396,7 +396,7 @@ export function build(snapshot, hash) {
       opts,
       output
     );
-    run(bin('hexo'), ['generate', '--config', configs, '--silent'], opts, output);
+    run(bin('hexo'), ['generate', '--config', configs], opts, output);
     run(bin('gulp'), [], opts, output);
 
     const pages = verify(staging);
