@@ -157,7 +157,7 @@ Environment variables: `REFERENCE_WATCH_INTERVAL` (seconds, default 10), `REFERE
   runs when `/config` or `/data` contain something.
 - **Reverse proxy.** Serve it behind whatever terminates TLS for you and set `url` in the config to the public
   address, so the sitemap and canonical links are right. To serve under a sub-path, set `url` and `root` together.
-- **Health and status.** `/healthz` returns 200 only while a release is served. `/status.json` reports the served
+- **Health and status.** `/healthz` returns 200 with a one-line body only while a release is served, 503 otherwise. `/status.json` reports the served
   release id, the image build id and when the release was built and activated.
 - **After a failure.** A build failure keeps the previous release and is logged with the reason; the same inputs
   are retried on the next container start, or immediately with `rebuild.mjs --force`.
