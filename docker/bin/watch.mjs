@@ -15,6 +15,7 @@ import {
   intEnv,
   log,
   paths,
+  preflight,
   readInputs,
   reconcile,
   seed,
@@ -67,19 +68,9 @@ function schedule() {
   timer = setTimeout(check, debounce);
 }
 
-try {
-  sweep();
-  seed();
-} catch (error) {
-  if (error.code === 'EROFS' || error.code === 'EACCES' || error.code === 'ENOENT') {
-    log(`cannot write to ${paths.releases}: ${error.message}`);
-    log(
-      'the container needs a writable /srv (mount a volume there when running read-only) owned by its user'
-    );
-    process.exit(1);
-  }
-  throw error;
-}
+if (!preflight()) process.exit(1);
+sweep();
+seed();
 
 for (const target of [dirname(paths.config), paths.data]) {
   if (!existsSync(target)) continue;

@@ -28,7 +28,8 @@ import {
   writeFileSync,
   writeSync
 } from 'node:fs';
-import { basename, join } from 'node:path';
+import { accessSync, constants } from 'node:fs';
+import { basename, dirname, join } from 'node:path';
 import Ajv from 'ajv';
 import yaml from 'js-yaml';
 
@@ -222,6 +223,39 @@ function prune(current) {
     renameSync(join(paths.releases, release.name), deleting);
     rmSync(deleting, { recursive: true, force: true });
     log(`pruned release ${release.name}`);
+  }
+}
+
+/** Log who we run as and whether the mounts are usable; returns false if /srv cannot be written. */
+export function preflight() {
+  const uid = process.getuid ? process.getuid() : '?';
+  const gid = process.getgid ? process.getgid() : '?';
+  log(`running as uid ${uid} gid ${gid}`);
+  const readable = (target, what) => {
+    if (!existsSync(target)) {
+      log(`${what}: ${target} not mounted; using defaults`);
+      return;
+    }
+    try {
+      accessSync(target, constants.R_OK);
+      log(`${what}: ${target} readable`);
+    } catch {
+      log(
+        `${what}: ${target} is NOT readable by uid ${uid}; fix the mount's ownership or set the container's user`
+      );
+    }
+  };
+  readable(paths.config, 'config');
+  readable(paths.data, 'data');
+  try {
+    mkdirSync(paths.releases, { recursive: true });
+    accessSync(dirname(paths.releases), constants.W_OK);
+    return true;
+  } catch (error) {
+    log(
+      `state: ${dirname(paths.releases)} is NOT writable by uid ${uid} (${error.code}); mount a volume there owned by that user`
+    );
+    return false;
   }
 }
 
