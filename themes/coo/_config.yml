@@ -5,8 +5,8 @@
 
 # The categories and order displayed on the home page. This list also decides
 # which posts exist: a post is built only if one of its categories admits it
-# (or it is a featured post). An entry is a name, or an object restricting the
-# category: { name: Game, only: [minecraft-java] } or { name: Toolkit, except: [alan-ai] }.
+# (or it is a featured post). An entry is a name, or an object with include,
+# only, except and sort; see config/site.example.yml.
 categories:
   - AI
   - Programming
@@ -21,7 +21,10 @@ categories:
   - Game
   - Other
 
-# Posts to leave out even though their category is listed (slugs)
+# Order of posts within a section: date, -date, title, -title
+sort_posts: date
+
+# Posts to leave out of every category (slugs)
 exclude_posts: []
 
 # Posts featured at the top of the home page (slugs); always built

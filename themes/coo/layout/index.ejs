@@ -4,8 +4,7 @@
         <div class="mt-6">
             <% category_rules().forEach(function (rule) {
                 const category = rule.name;
-                const found = site.categories.findOne({name: category});
-                const posts = found ? found.posts.sort('date').toArray().filter(post => category_admits(rule, post.slug)) : [];
+                const posts = category_posts(rule);
                 if (posts.length === 0) return; %>
                 <h2 class="sm:text-xl font-medium mt-12 mb-2 text-slate-800 dark:text-slate-300"><%- category %></h2>
                 <div class="h-1 bg-slate-200 dark:bg-slate-900 ounded-full overflow-hidden mb-6">

@@ -23,14 +23,25 @@
                 "additionalProperties": false,
                 "properties": {
                   "name": { "type": "string" },
+                  "include": { "type": "array", "items": { "type": "string" } },
                   "only": { "type": "array", "items": { "type": "string" } },
-                  "except": { "type": "array", "items": { "type": "string" } }
-                }
+                  "except": { "type": "array", "items": { "type": "string" } },
+                  "sort": { "enum": ["date", "-date", "title", "-title", "listed"] }
+                },
+                "allOf": [
+                  { "not": { "required": ["only", "include"] } },
+                  { "not": { "required": ["only", "except"] } },
+                  {
+                    "if": { "properties": { "sort": { "const": "listed" } }, "required": ["sort"] },
+                    "then": { "required": ["only"] }
+                  }
+                ]
               }
             ]
           }
         },
         "exclude_posts": { "type": "array", "items": { "type": "string" } },
+        "sort_posts": { "enum": ["date", "-date", "title", "-title"] },
         "featured_posts": { "type": "array", "items": { "type": "string" } },
         "hero": {
           "type": "object",

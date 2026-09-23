@@ -65,9 +65,12 @@ configuration, so anything Hexo understands can be set there, but the settings m
   interface is English only.
 - **Content**: `theme_config.categories` lists the sections on the home page, in order, and decides which
   cheat sheets exist at all: a sheet is built only if one of its categories admits it, otherwise it has no page, no
-  search entry and no sitemap entry. An entry is a category name, or an object that keeps `only` some of its sheets
-  or all `except` some. `theme_config.featured_posts` picks the sheets shown at the top of the home page; they are
-  always built. `theme_config.exclude_posts` drops individual sheets from every category.
+  search entry and no sitemap entry. An entry is a category name, or an object that adjusts it: `include` adds
+  sheets from anywhere, `except` removes some, `only` sets the exact membership, and `sort` orders the section
+  (`date`, `-date`, `title`, `-title`, or `listed` for the order of an `only` list). A new name with `include` or
+  `only` is a category of your own. `theme_config.sort_posts` sets the default order for all sections.
+  `theme_config.featured_posts` picks the sheets shown at the top of the home page; they are always built.
+  `theme_config.exclude_posts` drops individual sheets from every category.
 - **Hero**: `theme_config.hero` sets the headline (multi-line allowed), the tagline paragraph under it and optional
   buttons on the home page.
 - **Header**: `theme_config.header.links` are the icon buttons next to the dark mode toggle, by default a link to
