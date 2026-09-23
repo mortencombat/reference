@@ -1,0 +1,28 @@
+name: Release PR
+
+# Reads the conventional commits since the last release and keeps a release
+# PR up to date (version bump in package.json, CHANGELOG.md). Merging that PR
+# creates the vX.Y.Z tag and a GitHub release, which the publish workflow
+# picks up. Uses the PAT so that the tag it pushes triggers workflows.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-please
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: Update release PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: googleapis/release-please-action@v5
+        with:
+          token: ${{ secrets.UPSTREAM_SYNC_TOKEN }}
+          release-type: node

@@ -3,10 +3,7 @@ name: Publish image
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - README.md
-      - LICENSE
-      - renovate.json
+    tags: ["v*"]
   schedule:
     # Weekly rebuild so the base image picks up security updates.
     - cron: "17 4 * * 1"
@@ -46,10 +43,15 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.IMAGE }}
+          # Every build of main: latest, the commit and the date. A release
+          # tag (from release-please) adds 1, 1.4 and 1.4.2 style tags.
           tags: |
-            type=raw,value=latest
+            type=raw,value=latest,enable={{is_default_branch}}
             type=sha,prefix=sha-
-            type=raw,value={{date 'YYYY.MM.DD'}}
+            type=raw,value={{date 'YYYY.MM.DD'}},enable={{is_default_branch}}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
       - id: build
         uses: docker/build-push-action@v6
         with:

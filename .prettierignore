@@ -47,3 +47,6 @@ Thumbs.db
 source/_posts/
 source/widget/
 source/assets/
+
+# Written by release-please
+CHANGELOG.md

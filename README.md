@@ -161,7 +161,10 @@ Environment variables: `REFERENCE_WATCH_INTERVAL` (seconds, default 10), `REFERE
   release id, the image build id and when the release was built and activated.
 - **After a failure.** A build failure keeps the previous release and is logged with the reason; the same inputs
   are retried on the next container start, or immediately with `rebuild.mjs --force`.
-- **Tags.** `latest` follows `main`; `sha-<commit>` and the `YYYY.MM.DD` date tags identify a specific build.
+- **Tags.** `latest` follows `main`. Releases are cut from the commit history with semantic versions: `1`,
+  `1.4` and `1.4.2` style tags, a `v1.4.2` git tag and a GitHub release with the changelog. A major bump means the
+  configuration changed incompatibly; the release notes say what to update. `sha-<commit>` and the `YYYY.MM.DD`
+  date tags identify any build, including the nightly content syncs between releases.
 
 ## Keeping up with upstream
 
