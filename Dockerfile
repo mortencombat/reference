@@ -50,6 +50,8 @@ COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/nginx-headers.conf /etc/nginx/reference-headers.conf
 
 ENV NODE_ENV=production \
+    # The browserslist data in the lockfile ages; the warning is noise here.
+    BROWSERSLIST_IGNORE_OLD_DATA=1 \
     REFERENCE_CONFIG=/config/site.yml \
     REFERENCE_DATA=/data \
     REFERENCE_WATCH_INTERVAL=10 \
