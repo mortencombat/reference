@@ -50,8 +50,10 @@ NAME = "John"   # => Error (about space)
 ### Comments
 
 ```bash
-# This is an inline Bash comment.
+# This is a signle-line (inline) Bash comment.
 ```
+
+Single-line comments in Bash start with `#` and continue to the end of the line.
 
 ```bash
 : '
@@ -61,7 +63,9 @@ in bash
 '
 ```
 
-Multi-line comments use `:'` to open and `'` to close
+Multi-line comments use `:'` to open and `'` to close.
+
+> **Note:** Bash does not have true multi-line comments. This works by passing a multi-line string to the no-op builtin `:` (colon), which ignores its argument.
 
 ### Arguments {.row-span-2}
 
@@ -860,6 +864,19 @@ if ping -c 1 google.com; then
     echo "It appears you have a working internet connection"
 fi
 ```
+
+### Public IP
+
+```bash
+# Show this machine's public IP
+curl myip.dog
+
+# Save the IP for use in a script
+public_ip=$(curl -fsS myip.dog)
+printf '%s\n' "$public_ip"
+```
+
+More IP tools: [myip.dog](https://myip.dog/)
 
 ### Special variables {.row-span-2}
 
