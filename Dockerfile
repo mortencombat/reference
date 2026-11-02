@@ -7,7 +7,7 @@
 # release inside the container. See docker/lib/site.mjs.
 
 ARG NODE_VERSION=26
-ARG PNPM_VERSION=10.34.5
+ARG PNPM_VERSION=10.34.9
 
 # --- Build the default site --------------------------------------------------
 FROM node:${NODE_VERSION}-alpine AS build
