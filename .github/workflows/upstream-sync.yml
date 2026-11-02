@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           # Full history so the last content commit can be determined.
           fetch-depth: 0
@@ -41,7 +41,7 @@ jobs:
       - name: Create pull request
         if: steps.sync.outputs.changed == 'true'
         id: pr
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
         with:
           # A PAT (or GitHub App token) is required so that CI runs on the PR;
           # pull requests created with GITHUB_TOKEN do not trigger workflows.
